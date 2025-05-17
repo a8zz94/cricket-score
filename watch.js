@@ -37,7 +37,7 @@ function startConnect(_topic) {
     
     // Use the same MQTT broker as the sender
     host = "test.mosquitto.org";
-    port = 8080;
+    port = 8081;
     
     // Set the topic to the match code
     topic = _topic;
