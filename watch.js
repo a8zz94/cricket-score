@@ -1,141 +1,186 @@
-var scoreboard = [[], [0]]; //scoreboard[<over_no>][0] counts wide runs
-var ball_no = 1; // Ball number will start from 1
-var over_no = 1; // Over number will start from 1
-var runs = 0;
-var edited = [];
-var isNoBall = false;
-var isTargetMode = false;
-var targetRuns = -1; // total runs scored by other team
-var targetOvers = -1; //total overs
-
+var client;
+var clientID = "";
+var host = "test.mosquitto.org";
+var port = 8080;
 var topic = -1;
 
-$(document).ready(function () {
-	const urlParams = new URLSearchParams(window.location.search);
-	if (urlParams.get("matchCode") != null) {
-		console.log(urlParams.get("matchCode"));
-		startConnect(urlParams.get("matchCode")); //TODO
-	} else {
-		// $('#matchCodeInput').modal('show');
-		let myModal = new bootstrap.Modal(
-			document.getElementById("shareModal"),
-			{}
-		);
-		myModal.show();
-	}
-	console.log(document.location.origin);
-
-	if (urlParams.get("debug") == null || urlParams.get("debug") != "true")
-		$("#messages").hide();
+$(document).ready(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Check if matchCode is provided in URL
+    if (urlParams.get("matchCode") != null) {
+        console.log("Found match code: " + urlParams.get("matchCode"));
+        startConnect(urlParams.get("matchCode"));
+    } else {
+        // Show modal to enter match code
+        let myModal = new bootstrap.Modal(
+            document.getElementById("shareModal"),
+            {}
+        );
+        myModal.show();
+    }
+    
+    // Hide debug messages unless in debug mode
+    if (urlParams.get("debug") == null || urlParams.get("debug") != "true") {
+        $("#messages").hide();
+    }
 });
 
 function getMatchCodeNConnect() {
-	let matchCode = $("#matchCodeInput").val();
-	startConnect(matchCode);
+    let matchCode = $("#matchCodeInput").val();
+    startConnect(matchCode);
 }
 
-let isStartConnectDone = false;
-
 function startConnect(_topic) {
-	clientID = "clientID - " + parseInt(Math.random() * 100);
-
-	host = "test.mosquitto.org";
-	port = 8080;
-	topic = _topic ?? "" + parseInt(Math.random() * 1000000);
-
-	document.getElementById("messages").innerHTML +=
-		"<span> Connecting to " + host + "on port " + port + "</span><br>";
-	document.getElementById("messages").innerHTML +=
-		"<span> Using the client Id " + clientID + " </span><br>";
-
-	client = new Paho.MQTT.Client(host, Number(port), clientID);
-
-	client.onConnectionLost = onConnectionLost;
-	client.onMessageArrived = onMessageArrived;
-
-	client.connect({
-		onSuccess: onConnect,
-		//        userName: userId,
-		//       passwordId: passwordId
-	});
-	isStartConnectDone = true;
-	console.log("start connect done!");
+    // Generate a client ID for this viewer
+    clientID = "cricket_viewer_" + parseInt(Math.random() * 10000);
+    
+    // Use the same MQTT broker as the sender
+    host = "test.mosquitto.org";
+    port = 8080;
+    
+    // Set the topic to the match code
+    topic = _topic;
+    
+    // Log connection attempt
+    if (document.getElementById("messages")) {
+        document.getElementById("messages").innerHTML +=
+            "<span> Connecting to " + host + " on port " + port + "</span><br>";
+        document.getElementById("messages").innerHTML +=
+            "<span> Using the client Id " + clientID + " </span><br>";
+    }
+    
+    // Create and configure MQTT client
+    client = new Paho.MQTT.Client(host, Number(port), clientID);
+    client.onConnectionLost = onConnectionLost;
+    client.onMessageArrived = onMessageArrived;
+    
+    // Connect to the broker
+    client.connect({
+        onSuccess: onConnect,
+        useSSL: false
+    });
+    
+    console.log("Attempting to connect to match: " + topic);
+    
+    // Show connecting message to user
+    $("#alert").html("Connecting to match...");
+    $("#alert").show();
 }
 
 function onConnect() {
-	document.getElementById("messages").innerHTML +=
-		"<span> Subscribing to topic " + topic + "</span><br>";
-
-	client.subscribe("matchCodeWatch" + topic);
-	publishMessage(JSON.stringify({ init: "true" }));
-	console.log("onConnect called");
+    if (document.getElementById("messages")) {
+        document.getElementById("messages").innerHTML +=
+            "<span> Subscribing to topic matchCodeWatch" + topic + "</span><br>";
+    }
+    
+    // Subscribe to match updates
+    client.subscribe("matchCodeWatch" + topic);
+    
+    // Request initial state
+    requestInitialState();
+    
+    console.log("Connected to MQTT broker, subscribed to matchCodeWatch" + topic);
 }
 
 function onConnectionLost(responseObject) {
-	document.getElementById("messages").innerHTML +=
-		"<span> ERROR: Connection is lost.</span><br>";
-	if (responseObject != 0) {
-		document.getElementById("messages").innerHTML +=
-			"<span> ERROR:" + responseObject.errorMessage + "</span><br>";
-	}
+    if (document.getElementById("messages")) {
+        document.getElementById("messages").innerHTML +=
+            "<span> ERROR: Connection is lost.</span><br>";
+        if (responseObject.errorCode !== 0) {
+            document.getElementById("messages").innerHTML +=
+                "<span> ERROR:" + responseObject.errorMessage + "</span><br>";
+        }
+    }
+    
+    // Show disconnection message
+    $("#alert").html("Connection lost. Please refresh the page to reconnect.");
+    $("#alert").addClass("alert-danger").removeClass("alert-success");
+    $("#alert").show();
+    
+    console.log("MQTT Connection lost: ", responseObject.errorMessage);
 }
 
 function onMessageArrived(message) {
-	console.log("OnMessageArrived: " + message.payloadString);
-	document.getElementById("messages").innerHTML +=
-		"<span> Topic:" +
-		message.destinationName +
-		"| Message : " +
-		message.payloadString +
-		"</span><br>";
-
-	let payload = JSON.parse(message.payloadString);
-	if (payload.update != undefined) {
-		updateHtml(payload.update.eleId, payload.update.newHtml);
-	} else if (payload.init != undefined) {
-		showConnected();
-		initHtml(payload);
-	} else if (payload.isTargetMode != undefined)
-		setTargetMode(payload.isTargetMode);
+    console.log("Message received: " + message.payloadString);
+    
+    if (document.getElementById("messages")) {
+        document.getElementById("messages").innerHTML +=
+            "<span>Topic: " +
+            message.destinationName +
+            " | Message: " +
+            message.payloadString +
+            "</span><br>";
+    }
+    
+    try {
+        const payload = JSON.parse(message.payloadString);
+        
+        // Handle HTML element updates
+        if (payload.update !== undefined) {
+            console.log("Updating element: " + payload.update.eleId);
+            $(payload.update.eleId).html(payload.update.newHtml);
+        } 
+        // Handle initial state data
+        else if (payload.init !== undefined && payload.init !== "true") {
+            console.log("Received initial state");
+            showConnected();
+            initHtml(payload);
+        } 
+        // Handle target mode updates
+        else if (payload.isTargetMode !== undefined) {
+            setTargetMode(payload.isTargetMode);
+        }
+    } catch (e) {
+        console.error("Error parsing message", e);
+    }
 }
 
-function publishMessage(msg) {
-	if (!isStartConnectDone) return;
-
-	// msg = document.getElementById("Message").value;
-	// topic = document.getElementById("topic_p").value;
-
-	Message = new Paho.MQTT.Message(msg);
-	Message.destinationName = "matchCodeWatch" + topic + "origin";
-
-	client.send(Message);
-	document.getElementById("messages").innerHTML +=
-		"<span> Message to topic " + topic + " is sent </span><br>";
+function requestInitialState() {
+    // Send a message to request initial state
+    const message = new Paho.MQTT.Message(JSON.stringify({ init: "true" }));
+    message.destinationName = "matchCodeWatch" + topic + "origin";
+    client.send(message);
+    
+    console.log("Requested initial state");
 }
 
 function updateHtml(eleId, newHtml) {
-	$(eleId).html(newHtml);
+    $(eleId).html(newHtml);
 }
 
 function initHtml(payload) {
-	// console.log(JSON.parse(initVars));
-	for (let keys in payload.init) {
-		$(keys).html(payload.init[keys]);
-	}
-	setTargetMode(payload.isTargetMode);
+    console.log("Initializing HTML with received data");
+    
+    // Update all HTML elements
+    for (let key in payload.init) {
+        $(key).html(payload.init[key]);
+    }
+    
+    // Set target mode
+    setTargetMode(payload.isTargetMode);
 }
 
 function setTargetMode(isTargetMode) {
-	isTargetMode ??= false;
-	if (isTargetMode) $("#targetBody").show();
-	else $("#targetBody").hide();
+    isTargetMode = isTargetMode || false;
+    
+    if (isTargetMode) {
+        $("#targetBoard").show();
+    } else {
+        $("#targetBoard").hide();
+    }
 }
 
 function showConnected() {
-	console.log("Connected successfully!");
-	$("#alert").html("Connected successfully!");
-	$("#alert").show();
-	setTimeout(function () {
-		$("#alert").hide();
-	}, 4000);
+    console.log("Connected successfully!");
+    
+    // Show success message
+    $("#alert").html("Connected successfully! Receiving match data...");
+    $("#alert").addClass("alert-success").removeClass("alert-danger");
+    $("#alert").show();
+    
+    // Hide alert after a few seconds
+    setTimeout(function() {
+        $("#alert").hide();
+    }, 4000);
 }
