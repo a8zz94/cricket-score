@@ -8,13 +8,11 @@ var isTargetMode = false;
 var targetRuns = -1; // total runs scored by other team
 var targetOvers = -1; //total overs
 var isShareMode = false;
+var allDeliveries = []; //Run and Striker Index
 // Add these variables
 var players = Array(11).fill().map((_, i) => ({ 
     name: "Player " + (i+1), 
-    runs: 0, 
-    balls: 0, 
-    fours: 0, 
-    sixes: 0 
+	bowlsFaced: [] 
 }));
 var striker = 0; // Index of striker batsman
 var nonStriker = 1; // Index of non-striker batsman
@@ -60,52 +58,23 @@ function init() {
 	console.log(urlParams.get("debug"));
 	if (urlParams.get("debug") == null || urlParams.get("debug") != "true")
 		$("#messages").hide();
-	// const queryString = window.location.search;
-	// const urlParams = new URLSearchParams(queryString);
-	// console.log(urlParams.get("matchCode"));
-	// console.log(document.location.origin);
 }
 
 function shareModeStart() {
 	isShareMode = true;
 	startConnect();
-
-	players = Array(11).fill().map((_, i) => ({ 
-		name: "Player " + (i+1), 
-		runs: 0, 
-		balls: 0, 
-		fours: 0, 
-		sixes: 0 
-	  }));
-	  striker = 0;
-	  nonStriker = 1;
-	  nextBatsman = 2;
-	  updateBatsmenDisplay();
 }
 
 function play_ball(run, score = 1) {
+	recordDelivery(run, striker);
 	if (run !== "+" && run !== "NB") {
 		// For normal deliveries (not extras)
+		players[striker].bowlsFaced.push(run);
 		if (run !== "W") {
-		  // Add runs to striker
-		  if (run !== "D") {
-			players[striker].runs += (typeof run === 'number') ? run : 0;
-			
-			// Track boundaries
-			if (run === 4) players[striker].fours++;
-			if (run === 6) players[striker].sixes++;
-		  }
-		  
-		  // Count the ball faced
-		  players[striker].balls++;
-		  
-		  // Swap batsmen for odd runs
 		  if (typeof run === 'number' && run % 2 === 1) {
 			swapBatsmen();
 		  }
 		} else {
-		  // Handle wicket
-		  players[striker].balls++;
 		  newBatsman();
 		}
 	  }
@@ -250,9 +219,26 @@ function back_button() {
 		ball_no = 6;
 		over_no--;
 	}
+
+	var last = allDeliveries.pop();
+	if(last.run == "W") {
+		players[last.striker].bowlsFaced.pop();
+		striker = last.striker;
+		nextBatsman--;
+	}
+	else if (last == "D") {
+		players[striker].bowlsFaced.pop();
+	}
+	else if (last == 1 || last == 3 || last == 5) {
+		players[nonStriker].bowlsFaced.pop();
+		swapBatsmen();
+	}else {
+		players[striker].bowlsFaced.pop();
+	}
 	scoreboard[over_no][ball_no] = undefined;
 	update_score();
 	update_runboard();
+	updateBatsmenDisplay();
 	updateHtml(
 		"#over-ball",
 		(over_no - 1).toString() + "." + (ball_no - 1).toString()
@@ -395,15 +381,19 @@ function editPlayerName(playerIndex) {
   
   // Function to update batsmen display
   function updateBatsmenDisplay() {
+	var strikerScore = sumScores(players[striker].bowlsFaced);
+	var numberOfBalls = players[striker].bowlsFaced.length
 	// Update striker display
 	$("#striker-name").text(players[striker].name);
-	$("#striker-runs").text(players[striker].runs);
-	$("#striker-balls").text(players[striker].balls);
+	$("#striker-runs").text(strikerScore);
+	$("#striker-balls").text(numberOfBalls);
 	
 	// Update non-striker display
+	var nonStrikerScore = sumScores(players[nonStriker].bowlsFaced);
+	var nonStrikerNumberOfBalls = players[nonStriker].bowlsFaced.length
 	$("#nonstriker-name").text(players[nonStriker].name);
-	$("#nonstriker-runs").text(players[nonStriker].runs);
-	$("#nonstriker-balls").text(players[nonStriker].balls);
+	$("#nonstriker-runs").text(nonStrikerScore);
+	$("#nonstriker-balls").text(nonStrikerNumberOfBalls);
   }
   
   // Function to swap striker and non-striker
@@ -444,14 +434,18 @@ function updateScorecard() {
 	  const isStriker = i === striker;
 	  const isNonStriker = i === nonStriker;
 	  const hasNotBatted = i >= nextBatsman;
-
+	  let playerSixes = player.bowlsFaced.filter(x => x === 6).length;
+	  let playerFours = player.bowlsFaced.filter(x => x === 4).length;
+	  let playerRuns = sumScores(player.bowlsFaced);
+	  let playerBalls = player.bowlsFaced.length;
+	  let isOut = player.bowlsFaced.includes("W");
 	  if(hasNotBatted) {
 		continue; // Skip players who haven't batted
 	  }
 
 	  // Calculate strike rate (runs ÷ balls × 100)
-	  const strikeRate = player.balls > 0 ? 
-		((player.runs / player.balls) * 100).toFixed(2) : 
+	  const strikeRate = playerBalls > 0 ? 
+		(playerRuns / playerBalls * 100).toFixed(2) : 
 		"0.00";
 	  
 	  // Add player row
@@ -460,22 +454,23 @@ function updateScorecard() {
 		  <td>
 			<span onclick="editPlayerName(${i})">${player.name}</span> 
 			${isStriker ? '<img src="/icons/cricket-bat.png" alt="*" class="bat-icon">' : ''}
+			${isOut ? '<img src="/icons/out.png" alt="(out)" class="bat-icon">' : ''}
 			${isNonStriker ? '<span class="text-muted">not out</span>' : ''}
 		  </td>
-		  <td>${hasNotBatted ? '-' : player.runs}</td>
-		  <td>${hasNotBatted ? '-' : player.balls}</td>
-		  <td>${hasNotBatted ? '-' : player.fours}</td>
-		  <td>${hasNotBatted ? '-' : player.sixes}</td>
+		  <td>${hasNotBatted ? '-' : playerRuns}</td>
+		  <td>${hasNotBatted ? '-' : playerBalls}</td>
+		  <td>${hasNotBatted ? '-' : playerFours}</td>
+		  <td>${hasNotBatted ? '-' : playerSixes}</td>
 		  <td>${hasNotBatted ? '-' : strikeRate}</td>
 		</tr>
 	  `;
 	  
 	  // Add to totals if player has batted
 	  if (!hasNotBatted) {
-		totalRuns += player.runs;
-		totalBalls += player.balls;
-		totalFours += player.fours;
-		totalSixes += player.sixes;
+		totalRuns += playerRuns;
+		totalBalls += playerBalls;
+		totalFours += playerFours;
+		totalSixes += playerSixes;
 	  }
 	}
 	
@@ -500,4 +495,33 @@ function updateScorecard() {
 	// Update the scorecard table
 	$('#batting-scorecard').html(scorecardHtml);
   }
-  updateScorecard()
+
+  function sumScores(scoreArray) {
+    return scoreArray.reduce((total, value) => {
+        // Handle numbers directly
+        if (typeof value === 'number') {
+            return total + value;
+        }
+        // Handle special string cases
+        switch(value) {
+            case 'NB': // No ball
+                return total + 1;
+            case '+':  // Wide
+                return total + 1;
+            case 'D':  // Dot ball
+            case 'W':  // Wicket
+                return total + 0;
+            default:   // Any other string
+                return total + 0;
+        }
+    }, 0);
+}
+
+function recordDelivery(run, strikerIdx) {
+    allDeliveries.push({
+        run: run,
+        striker: strikerIdx
+    });
+}
+
+updateScorecard()
