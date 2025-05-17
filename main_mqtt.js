@@ -7,7 +7,7 @@ function startConnect(_topic) {
     
     // Use a consistent MQTT broker
     host = "test.mosquitto.org";
-    port = 8081;
+    port = 8081; // Use secure WebSocket port
     
     // Generate a topic if one isn't provided
     topic = _topic ?? "" + parseInt(Math.random() * 1000000);
@@ -50,30 +50,62 @@ function startConnect(_topic) {
     client.onConnectionLost = onConnectionLost;
     client.onMessageArrived = onMessageArrived;
     
-    // Connect to the broker
+    // Add connection status tracking
+    isStartConnectDone = false; // Reset to false until connection is confirmed
+    
+    // Connect to the broker with better error handling
     client.connect({
         onSuccess: onConnect,
-        useSSL: false
+        onFailure: function(e) {
+            console.error("Connection failed:", e);
+            if (document.getElementById("messages")) {
+                document.getElementById("messages").innerHTML +=
+                    "<span>Connection failed: " + e.errorMessage + "</span><br>";
+            }
+            isStartConnectDone = false;
+        },
+        useSSL: true, // Must be true when using WebSockets with HTTPS
+        timeout: 10
     });
     
-    isStartConnectDone = true;
-    console.log("MQTT connection established with topic: matchCodeWatch" + topic);
+    console.log("Attempting MQTT connection with topic: matchCodeWatch" + topic);
 }
 
 function onConnect() {
+    console.log("MQTT Connected successfully");
+    
     if (document.getElementById("messages")) {
         document.getElementById("messages").innerHTML +=
+            "<span> Connected to MQTT broker successfully </span><br>" +
             "<span> Subscribing to topic matchCodeWatch" + topic + "origin</span><br>";
     }
     
     // Subscribe to the feedback channel
     client.subscribe("matchCodeWatch" + topic + "origin");
     
-    // Send an initial status update
-    console.log("MQTT Connected successfully");
+    // Set the connection flag to true only after connection is established
+    isStartConnectDone = true;
+    
+    // Add a visual indicator
+    if (document.getElementById("sharingStatus")) {
+        document.getElementById("sharingStatus").innerHTML = 
+            '<span class="text-success">✓ Connected and sharing active</span>';
+    }
+    
+    // Send a test message to confirm publishing works
+    try {
+        const testMsg = new Paho.MQTT.Message(JSON.stringify({test: "Connection test"}));
+        testMsg.destinationName = "matchCodeWatch" + topic;
+        client.send(testMsg);
+        console.log("Test message sent successfully");
+    } catch (e) {
+        console.error("Failed to send test message:", e);
+    }
 }
 
 function onConnectionLost(responseObject) {
+    isStartConnectDone = false;
+    
     if (document.getElementById("messages")) {
         document.getElementById("messages").innerHTML +=
             "<span> ERROR: Connection is lost.</span><br>";
@@ -83,8 +115,20 @@ function onConnectionLost(responseObject) {
         }
     }
     
-    isStartConnectDone = false;
+    if (document.getElementById("sharingStatus")) {
+        document.getElementById("sharingStatus").innerHTML = 
+            '<span class="text-danger">✗ Connection lost - click Share again</span>';
+    }
+    
     console.log("MQTT Connection lost: ", responseObject.errorMessage);
+    
+    // Attempt to reconnect
+    setTimeout(function() {
+        if (!isStartConnectDone) {
+            console.log("Attempting to reconnect...");
+            startConnect(topic);
+        }
+    }, 5000);
 }
 
 function onMessageArrived(message) {
@@ -107,14 +151,33 @@ function onMessageArrived(message) {
             console.log("Received initialization request from viewer");
             sendInitVariables();
         }
+        
+        // Acknowledge viewer connection
+        if (payload.viewer_joined) {
+            console.log("Viewer joined:", payload.client_id);
+            // You could update a viewer count here if desired
+        }
     } catch (e) {
         console.error("Error parsing message", e);
     }
 }
 
 function publishMessage(msg) {
-    if (!isStartConnectDone || !client || !client.isConnected()) {
+    // Better check if we're ready to publish
+    if (!isStartConnectDone) {
         console.log("Cannot publish: not connected");
+        return;
+    }
+    
+    if (!client) {
+        console.log("Cannot publish: client not initialized");
+        return;
+    }
+    
+    if (!client.isConnected()) {
+        console.log("Cannot publish: client initialized but not connected");
+        // Attempt to reconnect
+        startConnect(topic);
         return;
     }
     
@@ -131,5 +194,38 @@ function publishMessage(msg) {
         console.log("Published message to matchCodeWatch" + topic);
     } catch (e) {
         console.error("Error publishing message", e);
+        isStartConnectDone = false; // Reset the flag
+        
+        // Attempt to reconnect
+        setTimeout(function() {
+            if (!isStartConnectDone) {
+                console.log("Error occurred while publishing. Attempting to reconnect...");
+                startConnect(topic);
+            }
+        }, 2000);
     }
 }
+
+// Add this function to check and refresh connection
+function checkConnection() {
+    if (client && !client.isConnected()) {
+        console.log("Connection check failed - reconnecting...");
+        isStartConnectDone = false;
+        startConnect(topic);
+        return false;
+    }
+    return isStartConnectDone;
+}
+
+// Add a heartbeat to keep connection alive
+setInterval(function() {
+    if (isStartConnectDone && client && client.isConnected()) {
+        try {
+            const heartbeat = new Paho.MQTT.Message(JSON.stringify({heartbeat: new Date().toISOString()}));
+            heartbeat.destinationName = "matchCodeWatch" + topic + "heartbeat";
+            client.send(heartbeat);
+        } catch (e) {
+            console.log("Heartbeat failed, connection may be down");
+        }
+    }
+}, 30000); // Every 30 seconds
