@@ -37,7 +37,25 @@
         <span id="over-ball" style="font-size: 10vw; line-height: 200%">0</span>
         <center><h6 style="color: red; display: none;" id="no-ball-warning">No ball: Tap the runs scored in no ball.</h6></center>
       </h6>
+      <div class="batsmen-display mt-3 mb-3">
+        <div class="row">
+          <div class="col-6">
+            <div class="batsman-card p-2">
+              <span id="striker-name" class="editable-name" onclick="editPlayerName(striker)">Player 1</span>
+              <img src="/icons/cricket-bat.png" alt="*" class="bat-icon">
+              <span id="striker-runs">0</span> (<span id="striker-balls">0</span>)
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="batsman-card p-2">
+              <span id="nonstriker-name" class="editable-name" onclick="editPlayerName(nonStriker)">Player 2</span>
+              <span id="nonstriker-runs">0</span> (<span id="nonstriker-balls">0</span>)
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+    
     <!-- END: This is the scores on the topmost part of the screen -->
     <!-- These are the action buttons and runboard -->
     <div class="col-right-custom">
@@ -69,9 +87,6 @@
           class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-light rounded-pill over-ball-style"
           id="ball_no_6"></button>
       </div>
-
-
-
 
       <div class="alert alert-primary text-center target-display" role="alert" id="targetBoard"
         style="display: none; transition: height 1400ms;">

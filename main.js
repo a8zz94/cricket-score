@@ -8,6 +8,17 @@ var isTargetMode = false;
 var targetRuns = -1; // total runs scored by other team
 var targetOvers = -1; //total overs
 var isShareMode = false;
+// Add these variables
+var players = Array(11).fill().map((_, i) => ({ 
+    name: "Player " + (i+1), 
+    runs: 0, 
+    balls: 0, 
+    fours: 0, 
+    sixes: 0 
+}));
+var striker = 0; // Index of striker batsman
+var nonStriker = 1; // Index of non-striker batsman
+var nextBatsman = 2; // Index of next batsman to come in
 
 $(document).ready(function () {
 	$("#run_dot").on("click", function (event) {
@@ -58,9 +69,46 @@ function init() {
 function shareModeStart() {
 	isShareMode = true;
 	startConnect();
+
+	players = Array(11).fill().map((_, i) => ({ 
+		name: "Player " + (i+1), 
+		runs: 0, 
+		balls: 0, 
+		fours: 0, 
+		sixes: 0 
+	  }));
+	  striker = 0;
+	  nonStriker = 1;
+	  nextBatsman = 2;
+	  updateBatsmenDisplay();
 }
 
 function play_ball(run, score = 1) {
+	if (run !== "+" && run !== "NB") {
+		// For normal deliveries (not extras)
+		if (run !== "W") {
+		  // Add runs to striker
+		  if (run !== "D") {
+			players[striker].runs += (typeof run === 'number') ? run : 0;
+			
+			// Track boundaries
+			if (run === 4) players[striker].fours++;
+			if (run === 6) players[striker].sixes++;
+		  }
+		  
+		  // Count the ball faced
+		  players[striker].balls++;
+		  
+		  // Swap batsmen for odd runs
+		  if (typeof run === 'number' && run % 2 === 1) {
+			swapBatsmen();
+		  }
+		} else {
+		  // Handle wicket
+		  players[striker].balls++;
+		  newBatsman();
+		}
+	  }
 	if (run == "+") {
 		//Wide ball
 		runs++;
@@ -189,6 +237,7 @@ function update_score() {
 	updateTarget();
 	updateHtml("#run", runs);
 	updateHtml("#wickets", wickets);
+	updateBatsmenDisplay();
 }
 
 function back_button() {
@@ -331,3 +380,45 @@ function sendInitVariables() {
 		})
 	);
 }
+
+// Function to edit player name
+function editPlayerName(playerIndex) {
+	const newName = prompt("Enter player name:", players[playerIndex].name);
+	if (newName !== null && newName.trim() !== "") {
+	  players[playerIndex].name = newName.trim();
+	  updateBatsmenDisplay();
+	}
+  }
+  
+  // Function to update batsmen display
+  function updateBatsmenDisplay() {
+	// Update striker display
+	$("#striker-name").text(players[striker].name);
+	$("#striker-runs").text(players[striker].runs);
+	$("#striker-balls").text(players[striker].balls);
+	
+	// Update non-striker display
+	$("#nonstriker-name").text(players[nonStriker].name);
+	$("#nonstriker-runs").text(players[nonStriker].runs);
+	$("#nonstriker-balls").text(players[nonStriker].balls);
+  }
+  
+  // Function to swap striker and non-striker
+  function swapBatsmen() {
+	const temp = striker;
+	striker = nonStriker;
+	nonStriker = temp;
+	updateBatsmenDisplay();
+  }
+  
+  // Function to bring in new batsman (after wicket)
+  function newBatsman() {
+	if (nextBatsman < 11) {
+	  striker = nextBatsman;
+	  nextBatsman++;
+	  updateBatsmenDisplay();
+	} else {
+	  alert("All out!");
+	  // Handle all out scenario
+	}
+  }

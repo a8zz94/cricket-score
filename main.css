@@ -289,3 +289,27 @@
   .position-relative {
 	margin-bottom: 2rem !important;
   }
+
+  .batsman-card {
+	margin-top: 0px;
+	background-color: rgb(245, 255, 170);
+	border-radius: 5px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  
+  .editable-name {
+	cursor: pointer;
+	border-bottom: 1px dashed #5028ff;
+  }
+  
+  .editable-name:hover {
+	color: #1e7e34;
+  }
+
+  .bat-icon {
+	height: 1em;  /* Same height as the font */
+	width: auto;  /* Maintain aspect ratio */
+	vertical-align: baseline;  /* Align with text */
+	margin-left: 2px;  /* Small space after name */
+	margin-right: 2px;  /* Small space before runs */
+  }
