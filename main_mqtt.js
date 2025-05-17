@@ -87,11 +87,11 @@ function onConnect() {
     isStartConnectDone = true;
     
     // Add a visual indicator
-    if (document.getElementById("sharingStatus")) {
-        document.getElementById("sharingStatus").innerHTML = 
-            '<span class="text-success">✓ Connected and sharing active</span>';
-    }
-    
+	if (document.getElementById("sharingStatus")) {
+		document.getElementById("sharingStatus").innerHTML = 
+			'<img src="/icons/wifi.png" alt="Connected" class="connection-icon" title="Connected and sharing active">';
+	}
+	
     // Send a test message to confirm publishing works
     try {
         const testMsg = new Paho.MQTT.Message(JSON.stringify({test: "Connection test"}));
@@ -115,10 +115,10 @@ function onConnectionLost(responseObject) {
         }
     }
     
-    if (document.getElementById("sharingStatus")) {
-        document.getElementById("sharingStatus").innerHTML = 
-            '<span class="text-danger">✗ Connection lost - click Share again</span>';
-    }
+	if (document.getElementById("sharingStatus")) {
+		document.getElementById("sharingStatus").innerHTML = 
+			'<img src="/icons/no-wifi.png" alt="Disconnected" class="connection-icon" title="Connection lost - click Share again">';
+	}
     
     console.log("MQTT Connection lost: ", responseObject.errorMessage);
     
