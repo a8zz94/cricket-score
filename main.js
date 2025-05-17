@@ -114,6 +114,7 @@ function play_ball(run, score = 1) {
 		runs++;
 		scoreboard[over_no][0] += 1;
 		update_score();
+		updateScorecard();
 		return;
 	}
 	if (run == "NB") {
@@ -145,6 +146,7 @@ function play_ball(run, score = 1) {
 			over_no++;
 			scoreboard[over_no] = [];
 			scoreboard[over_no][0] = 0; //Wide bowls counter
+			swapBatsmen();
 		}
 	}
 	update_score();
@@ -238,6 +240,7 @@ function update_score() {
 	updateHtml("#run", runs);
 	updateHtml("#wickets", wickets);
 	updateBatsmenDisplay();
+	updateScorecard();
 }
 
 function back_button() {
@@ -249,7 +252,6 @@ function back_button() {
 	}
 	scoreboard[over_no][ball_no] = undefined;
 	update_score();
-	update_scoreboard();
 	update_runboard();
 	updateHtml(
 		"#over-ball",
@@ -387,6 +389,7 @@ function editPlayerName(playerIndex) {
 	if (newName !== null && newName.trim() !== "") {
 	  players[playerIndex].name = newName.trim();
 	  updateBatsmenDisplay();
+	  updateScorecard();
 	}
   }
   
@@ -409,6 +412,7 @@ function editPlayerName(playerIndex) {
 	striker = nonStriker;
 	nonStriker = temp;
 	updateBatsmenDisplay();
+	updateScorecard();
   }
   
   // Function to bring in new batsman (after wicket)
@@ -417,8 +421,83 @@ function editPlayerName(playerIndex) {
 	  striker = nextBatsman;
 	  nextBatsman++;
 	  updateBatsmenDisplay();
+	  updateScorecard();
 	} else {
 	  alert("All out!");
 	  // Handle all out scenario
 	}
   }
+
+// Function to update the player scorecard
+function updateScorecard() {
+	let scorecardHtml = '';
+	
+	// Calculate team totals
+	let totalRuns = 0;
+	let totalBalls = 0;
+	let totalFours = 0;
+	let totalSixes = 0;
+	
+	// Generate rows for each player
+	for (let i = 0; i < players.length; i++) {
+	  const player = players[i];
+	  const isStriker = i === striker;
+	  const isNonStriker = i === nonStriker;
+	  const hasNotBatted = i >= nextBatsman;
+
+	  if(hasNotBatted) {
+		continue; // Skip players who haven't batted
+	  }
+
+	  // Calculate strike rate (runs ÷ balls × 100)
+	  const strikeRate = player.balls > 0 ? 
+		((player.runs / player.balls) * 100).toFixed(2) : 
+		"0.00";
+	  
+	  // Add player row
+	  scorecardHtml += `
+		<tr>
+		  <td>
+			<span onclick="editPlayerName(${i})">${player.name}</span> 
+			${isStriker ? '<img src="/icons/cricket-bat.png" alt="*" class="bat-icon">' : ''}
+			${isNonStriker ? '<span class="text-muted">not out</span>' : ''}
+		  </td>
+		  <td>${hasNotBatted ? '-' : player.runs}</td>
+		  <td>${hasNotBatted ? '-' : player.balls}</td>
+		  <td>${hasNotBatted ? '-' : player.fours}</td>
+		  <td>${hasNotBatted ? '-' : player.sixes}</td>
+		  <td>${hasNotBatted ? '-' : strikeRate}</td>
+		</tr>
+	  `;
+	  
+	  // Add to totals if player has batted
+	  if (!hasNotBatted) {
+		totalRuns += player.runs;
+		totalBalls += player.balls;
+		totalFours += player.fours;
+		totalSixes += player.sixes;
+	  }
+	}
+	
+	// Add extras and total rows
+	const extras = runs - totalRuns; // Calculate extras
+	
+	scorecardHtml += `
+	  <tr class="table-light">
+		<td><strong>Extras</strong></td>
+		<td colspan="5"><strong>${extras}</strong> (Wides, No-balls, etc.)</td>
+	  </tr>
+	  <tr class="table-primary">
+		<td><strong>TOTAL</strong></td>
+		<td><strong>${runs}</strong></td>
+		<td><strong>${totalBalls}</strong></td>
+		<td><strong>${totalFours}</strong></td>
+		<td><strong>${totalSixes}</strong></td>
+		<td><strong>${totalBalls > 0 ? ((runs / totalBalls) * 100).toFixed(2) : "0.00"}</strong></td>
+	  </tr>
+	`;
+	
+	// Update the scorecard table
+	$('#batting-scorecard').html(scorecardHtml);
+  }
+  updateScorecard()

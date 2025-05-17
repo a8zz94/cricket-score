@@ -313,3 +313,41 @@
 	margin-left: 2px;  /* Small space after name */
 	margin-right: 2px;  /* Small space before runs */
   }
+
+  #playerScorecard {
+	box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+	border: none;
+	border-radius: 8px;
+	overflow: hidden;
+  }
+  
+  #playerScorecard .table {
+	margin-bottom: 0;
+  }
+  
+  #playerScorecard th {
+	font-weight: 600;
+	font-size: 0.9rem;
+  }
+  
+  #playerScorecard td {
+	font-size: 0.9rem;
+	vertical-align: middle;
+  }
+  
+  .batsman-status {
+	font-weight: bold;
+	font-size: 0.8rem;
+  }
+  
+  .not-out {
+	color: #38a169;
+  }
+  
+  .out {
+	color: #e53e3e;
+  }
+
+  .scorecard-header th{ 
+	color: black !important;
+  }
