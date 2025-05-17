@@ -256,7 +256,7 @@ function updateTarget() {
 	updateHtml("#targetOversLeft", ballsLeft);
 
 	let closeButton =
-		'&nbsp;&nbsp;<button type="button" class="btn-close" onClick="setTarget(false)"></button>';
+		'';
 	if (ballsLeft == 0) {
 		if (targetRuns < runs) {
 			updateHtml(

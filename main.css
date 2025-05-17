@@ -1,98 +1,291 @@
-html,
-body,
-.container {
+:root {
+	/* Primary color palette - Cricket green theme */
+	--primary-color: #1e7e34;       /* Deep green */
+	--secondary-color: #2a9d8f;     /* Teal accent */
+	--accent-color: #f8c105;        /* Cricket ball gold */
+	--light-bg: #f0f7f4;            /* Light background */
+	--dark-bg: #243e36;             /* Dark green for contrast */
+	--text-light: #ffffff;          /* Text on dark backgrounds */
+	--text-dark: #2d3748;           /* Text on light backgrounds */
+	--success: #38a169;             /* Success green */
+	--danger: #e53e3e;              /* Danger red */
+	--muted: #718096;               /* Muted text */
+	--border-color: #e2e8f0;        /* Light border */
+  }
+  
+  html,
+  body,
+  .container {
 	margin: 0px;
 	max-width: 100%;
-}
-
-.col-left-custom,
-.col-left-custom {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background-color: var(--light-bg);
+	color: var(--text-dark);
+  }
+  
+  .col-left-custom,
+  .col-left-custom {
 	width: 100%;
-}
-.over-ball-style {
-	width: 2rem;
-	height: 2rem;
-}
-
-@media only screen and (orientation: landscape) {
-	/* For desktops: */
-	.col-left-custom {
-		width: 70%;
-		float: left;
-		padding: 15px;
-	}
-	.col-right-custom {
-		width: 30%;
-		height: 100vh;
-		float: left;
-		padding: 15px;
-	}
-	/* .over-ball-style {
-		width: 2em;
-		height: 2em;
-		font-size: 2em;
-	}
-	.runboard-row-1{
-		margin-bottom: 2em;
-	} */
-}
-
-.center {
-	margin: auto;
-	width: 100%;
-	border: 3px solid green;
+  }
+  
+  /* Header styling */
+  .header-area {
+	background-color: var(--primary-color);
+	color: var(--text-light);
+	padding: 15px;
+	border-radius: 0 0 10px 10px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+  }
+  
+  /* Scoreboard styling */
+  .scoreboard-display {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 	padding: 10px;
-}
-
-.btn-custom {
+	margin-bottom: 30px;
+	margin-top:10px;
+  }
+  
+  .score-number {
+	font-size: 2.5rem;
+	font-weight: bold;
+	color: var(--primary-color);
+  }
+  
+  .wickets-number {
+	font-size: 2rem;
+	color: var(--danger);
+  }
+  
+  .over-ball-style {
+	width: 2.2rem;
+	height: 2.2rem;
+	border: none;
+	font-weight: bold;
+  }
+  
+  /* Button styling */
+  .btn-custom {
 	display: inline-block;
 	width: 100%;
-}
-
-.btn-custom-lg {
+	border-radius: 8px;
+	transition: all 0.2s ease;
+	border: none;
+  }
+  
+  .btn-custom-lg {
 	height: 4.5em;
-}
-.btn-custom-sm {
+	font-size: 1.1em;
+	font-weight: 600;
+  }
+  
+  .btn-custom-sm {
 	height: 3em;
-}
-table {
-	font-family: arial, sans-serif;
-	border-collapse: collapse;
+  }
+  
+  .btn-run {
+	background-color: var(--secondary-color);
+	color: var(--text-light);
+  }
+  
+  .btn-run:hover {
+	background-color: var(--primary-color);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .btn-action {
+	background-color: var(--accent-color);
+	color: var(--text-dark);
+	font-weight: bold;
+  }
+  
+  .btn-action:hover {
+	background-color: #e0ac00;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .btn-wide {
+	background-color: var(--dark-bg);
+	color: var(--text-light);
+  }
+  
+  .btn-wicket {
+	background-color: var(--danger);
+	color: var(--text-light);
+  }
+  
+  .btn-link {
+	color: var(--primary-color);
+	text-decoration: none;
+	font-weight: 500;
+  }
+  
+  .btn-link:hover {
+	color: var(--secondary-color);
+	text-decoration: underline;
+  }
+  
+  /* Table styling */
+  table {
+	font-family: inherit;
+	border-collapse: separate;
+	border-spacing: 0;
 	width: 100%;
-}
-
-td,
-th {
-	border: 1px solid #dddddd;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  }
+  
+  td, th {
+	border: none;
 	text-align: left;
-	padding: 8px;
-}
+	padding: 12px 15px;
+  }
+  
+  th {
+	background-color: var(--primary-color);
+	color: var(--text-light);
+	font-weight: 600;
+  }
+  
+  tr:nth-child(even) {
+	background-color: #f5f9f7;
+  }
+  
+  tr:nth-child(odd) {
+	background-color: white;
+  }
+  
+  tr:hover {
+	background-color: #edf7f4;
+  }
+  
+  /* Modal styling */
+  .modal-content {
+	border-radius: 10px;
+	border: none;
+  }
+  
+  .modal-header {
+	background-color: var(--primary-color);
+	color: var(--text-light);
+	border-radius: 10px 10px 0 0;
+  }
+  
+  .modal-footer {
+	border-top: 1px solid var(--border-color);
+  }
+  
+  /* Sharing status icon */
+  .sharing-status-corner {
+	position: fixed;
+	top: 15px;
+	right: 15px;
+	z-index: 1000;
+	background-color: white;
+	border-radius: 50%;
+	padding: 5px;
+	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 2px solid var(--primary-color);
+	transition: all 0.3s ease;
+  }
+  
+  .sharing-status-corner:hover {
+	transform: scale(1.1);
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .connection-icon {
+	width: 24px;
+	height: 24px;
+  }
+  
+  /* Target mode styling */
+  .target-display {
+	background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+	color: var(--text-light);
+	padding: 15px;
+	border-radius: 8px;
+	margin-top: 15px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Responsive adjustments */
+  @media only screen and (orientation: landscape) {
+	/* For desktops: */
+	.col-left-custom {
+	  width: 70%;
+	  float: left;
+	  padding: 15px;
+	}
+	
+	.col-right-custom {
+	  width: 30%;
+	  height: 100vh;
+	  float: left;
+	  padding: 15px;
+	  border-left: 1px solid var(--border-color);
+	  background-color: white;
+	}
+  
+	.card-container {
+	  display: grid;
+	  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	  gap: 20px;
+	}
+  }
+  
+  /* Material icons styling */
+  .material-symbols-outlined {
+	font-variation-settings: "FILL" 0, "wght" 500, "GRAD" 200, "opsz" 24;
+	vertical-align: middle;
+  }
 
-tr:nth-child(even) {
-	background-color: #dddddd;
-}
 
-.material-symbols-outlined {
-	font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 200, "opsz" 24;
-}
-
-.sharing-status-corner {
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    z-index: 1000;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    padding: 5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.connection-icon {
-    width: 24px;
-    height: 24px;
-}
+  /* Improved styling for the runboard/over balls */
+.over-ball-style {
+	width: 2.5rem;
+	height: 2.5rem;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+	font-weight: bold;
+	font-size: 1rem;
+  }
+  
+  /* Active ball (current) - the one with btn-primary class */
+  .btn-primary.over-ball-style {
+	background-color: var(--primary-color, #1e7e34);
+	border: 2px solid #0d6124;
+	transform: scale(1.1);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Inactive balls (not yet bowled) - the ones with btn-light class */
+  .btn-light.over-ball-style {
+	background-color: #f0f7ff;
+	border: 2px dashed #b8d0e8;
+	color: #495057;
+  }
+  
+  /* Progress bar improvements */
+  .progress {
+	height: 2px !important;
+	background-color: #e2e8f0;
+  }
+  
+  .progress-bar {
+	background-color: var(--primary-color, #1e7e34);
+  }
+  
+  /* Position adjustments for better visibility */
+  .position-relative {
+	margin-bottom: 2rem !important;
+  }
