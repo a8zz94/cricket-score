@@ -1,7 +1,7 @@
 var client;
 var clientID = "";
 var host = "test.mosquitto.org";
-var port = 8080;
+var port = 8081;
 var topic = -1;
 
 $(document).ready(function() {
@@ -58,7 +58,14 @@ function startConnect(_topic) {
     // Connect to the broker
     client.connect({
         onSuccess: onConnect,
-        useSSL: false
+		onFailure: function(e) {
+			console.error("Connection failed:", e);
+			$("#alert").html("Connection failed: " + e.errorMessage);
+			$("#alert").addClass("alert-danger").removeClass("alert-success");
+			$("#alert").show();
+		},
+		useSSL: true, // This MUST be true when connecting from HTTPS pages
+		timeout: 10
     });
     
     console.log("Attempting to connect to match: " + topic);

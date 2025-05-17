@@ -7,7 +7,7 @@ function startConnect(_topic) {
     
     // Use a consistent MQTT broker
     host = "test.mosquitto.org";
-    port = 8080;
+    port = 8081;
     
     // Generate a topic if one isn't provided
     topic = _topic ?? "" + parseInt(Math.random() * 1000000);
