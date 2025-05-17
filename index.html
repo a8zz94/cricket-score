@@ -141,10 +141,13 @@
             data-target="#myModal2">Undo</button>
         </div>
       </div>
-      <button type="button" class="btn btn-link btn-custom btn-custom-sm" data-toggle="modal" data-target="#TargetModal"
-        id="targetModeButton">Target mode</button>
-      <button type="button" class="btn btn-link btn-custom btn-custom-sm" data-toggle="modal" data-target="#shareModal"
-        id="targetModeButton">Share match Code</button>
+
+      <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-link" data-toggle="modal" data-target="#TargetModal"
+          id="targetModeButton">Target mode</button>
+        <button type="button" class="btn btn-link" data-toggle="modal" data-target="#shareModal"
+          id="targetModeButton">Share match Code</button>
+      </div>
         <div class="text-center small">
           <span class="fw-bold text-primary">Oxford Strikers C.C. Cricket Scorer</span> 
           <span class="text-muted mx-1">|</span> 
@@ -253,7 +256,6 @@
                 </div>
               </div>
             </div>
-
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -263,7 +265,6 @@
         </div>
       </div>
     </div>
-
 
     <!-- shareModal: Modal 4: For match sharing -->
     <div class="modal fade" id="shareModal" role="dialog">
@@ -277,9 +278,6 @@
           </div>
           <div class="modal-body" id="shareModalBody">
             <button type="button" class="btn btn-default" onclick="shareModeStart()"><u>Turn on share mode?</u></button>
-
-
-
           </div>
           <div class="modal-footer" id="shareModalFooter">
           </div>
