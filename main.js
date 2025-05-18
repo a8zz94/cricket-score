@@ -1,4 +1,11 @@
-var scoreboard = [[], [0]]; //scoreboard[<over_no>][0] counts wide runs
+var scoreboard = [
+	[],
+	[
+		runs = [[0]],
+		extras = 0,
+		bowler = 'Bowler 1'
+	]
+]//scoreboard[<over_no>][0] counts wide runs
 var ball_no = 1; // Ball number will start from 1
 var over_no = 1; // Over number will start from 1
 var runs = 0;
@@ -47,7 +54,7 @@ $(document).ready(function () {
 		play_ball("W", 0);
 	});
 	$("#scoreboard-btn").on("click", function (event) {
-		update_scoreboard();
+		updateScorecard()
 	});
 	init();
 });
@@ -81,7 +88,7 @@ function play_ball(run, score = 1) {
 	if (run == "+") {
 		//Wide ball
 		runs++;
-		scoreboard[over_no][0] += 1;
+		scoreboard[over_no][1] += 1;
 		update_score();
 		updateScorecard();
 		return;
@@ -91,7 +98,7 @@ function play_ball(run, score = 1) {
 		noBall(true);
 		//No ball
 		runs++;
-		scoreboard[over_no][0] += 1;
+		scoreboard[over_no][1] += 1;
 		update_score();
 		return;
 	}
@@ -101,11 +108,13 @@ function play_ball(run, score = 1) {
 	// console.log("over_no=", over_no, "| ball_no=", ball_no," |Runs=",runs);
 
 	if (isNoBall) {
-		scoreboard[over_no][0] += run == "D" ? 0 : run;
+		scoreboard[over_no][1] += run == "D" ? 0 : run;
 		// isNoBall = false;
 		noBall(false);
 	} else {
-		scoreboard[over_no][ball_no] = run;
+		//try with ball_no
+		scoreboard[over_no][0][ball_no] = run;
+		//scoreboard[over_no][0].push(run);
 		// console.log(scoreboard[over_no]);
 		// console.log(scoreboard);
 		update_runboard();
@@ -113,20 +122,22 @@ function play_ball(run, score = 1) {
 		if (ball_no >= 7) {
 			ball_no = 1;
 			over_no++;
-			scoreboard[over_no] = [];
-			scoreboard[over_no][0] = 0; //Wide bowls counter
+			scoreboard[over_no] =[
+				runs = [[0]],
+				extras = 0,
+				bowler = 'Bowler ' + over_no
+			]; //Wide bowls counter
 			swapBatsmen();
 		}
 	}
 	update_score();
-	update_scoreboard();
 }
 
 function update_runboard() {
 	// Updates the runboard when the function is called
 	for (i = 1; i < 7; i++) {
 		let score_und = (_score_und) => (_score_und == undefined ? "" : _score_und);
-		updateHtml("#ball_no_" + i.toString(), score_und(scoreboard[over_no][i]));
+		updateHtml("#ball_no_" + i.toString(), score_und(scoreboard[over_no][0][i]));
 	}
 	if (ball_no != 1) {
 		$("#ball_no_" + ball_no.toString()).removeClass("btn-light");
@@ -149,10 +160,9 @@ function change_score() {
 	let over = parseInt($("#change_over").val());
 	let ball = parseInt($("#change_ball").val());
 	let run = parseInt($("#change_run").val());
-	edited.push([over, ball, scoreboard[over][ball], run]);
-	scoreboard[over][ball] = run;
+	edited.push([over, ball, scoreboard[over][0][ball], run]);
+	scoreboard[over][0][ball] = run;
 	update_score();
-	update_scoreboard();
 	updateHtml("#run", runs);
 	let edited_scores = "Edited scores:<br>";
 	for (i = 0; i < edited.length; i++) {
@@ -171,38 +181,24 @@ function change_score() {
 	updateHtml("#edited-scores", edited_scores);
 }
 
-function update_scoreboard() {
-	// Updates the table in the modal which appears when the scoreboard button is pressed.
-	var table = "";
-	for (i = 1; i <= over_no; i++) {
-		table = table + "<tr>";
-		table += "<td>" + i.toString() + "</td>";
-		table +=
-			"<td>" +
-			scoreboard[i].slice(1, 7).join(" - ") +
-			" (" +
-			scoreboard[i][0].toString() +
-			")" +
-			"</td>";
-		table = table + "</tr>";
-	}
-	updateHtml(
-		"#scoreboard",
-		"<tr><th>Over</th><th>Score (Extras)</th></tr>" + table
-	);
-}
-
 function update_score() {
 	let score = 0;
 	let wickets = 0;
 
-	for (i = 1; i <= over_no; i++) {
-		let numOr0 = (n) => (n == "+" ? 1 : isNaN(n) ? 0 : n);
-		score += scoreboard[i].reduce((a, b) => numOr0(a) + numOr0(b));
-		scoreboard[i].forEach((element) => {
-			if (element == "W") wickets++;
-		});
-	}
+	allDeliveries.forEach((delivery) => {
+		if (delivery.run == "+") {
+			score++;
+		}
+		if (delivery.run == "W") {
+			wickets++;
+		}
+		if (delivery.run == "NB") {
+			score++;
+		}
+		if (!isNaN(delivery.run)) {
+			score += delivery.run;
+		}
+	});
 	// console.log(wickets);
 	runs = score;
 	updateTarget();
@@ -235,7 +231,7 @@ function back_button() {
 	}else {
 		players[striker].bowlsFaced.pop();
 	}
-	scoreboard[over_no][ball_no] = undefined;
+	scoreboard[over_no][0][ball_no] = undefined;
 	update_score();
 	update_runboard();
 	updateBatsmenDisplay();
@@ -523,5 +519,3 @@ function recordDelivery(run, strikerIdx) {
         striker: strikerIdx
     });
 }
-
-updateScorecard()
