@@ -25,6 +25,7 @@ var players = Array(11).fill().map((_, i) => ({
 var striker = 0; // Index of striker batsman
 var nonStriker = 1; // Index of non-striker batsman
 var nextBatsman = 2; // Index of next batsman to come in
+var bowlerScorecard = [];
 //#endregion
 
 //#region Application Start
@@ -296,6 +297,79 @@ function updateScorecard() {
 	
 	// Update the scorecard table
 	$('#batting-scorecard').html(scorecardHtml);
+	
+	bowlingScorecard();
+  }
+
+  function bowlingScorecard() {
+	let scoreboardHtml = '';
+	bowlerScorecard = restructureByBowler(scoreboard)
+	let totalOvers = 0;
+	let maidensAndRunsAndWickets = [0,0,0];
+
+	for (const bowler in bowlerScorecard) {
+		totalOvers = bowlerScorecard[bowler].length;
+		let currentOver = bowlerScorecard[bowler][totalOvers - 1];
+		console.log(currentOver);	
+		maidensAndRunsAndWickets = calculateNumberOfMadiens(bowlerScorecard[bowler]);
+		scoreboardHtml += `
+		  <tr>
+			<td>${bowler}</td>
+			<td>${totalOvers - 1}.${currentOver.runs.length - 1}</td>
+			<td>${maidensAndRunsAndWickets[0]}</td>
+			<td>${maidensAndRunsAndWickets[1]}</td>
+			<td>${maidensAndRunsAndWickets[2]}</td>
+			<td>${maidensAndRunsAndWickets[1] / totalOvers}</td>
+		</tr>
+		`;
+	}
+
+	$('#bowling-scorecard').html(scoreboardHtml);
+	
+  }
+
+  function calculateNumberOfMadiens(overs){
+	let totalRunsForBowler = 0;
+	let numberOfMaidens = 0;
+	let numberOfWickets = 0;
+	if(overs.length <= 1 && overs[0].runs.length < 6) {
+		let firstOver = overs[0];
+		let runs = sumScores(firstOver.runs);
+		totalRunsForBowler += runs + firstOver.extras;
+		numberOfWickets += firstOver.runs.filter(item => item === 'W').length;
+	}
+	else
+	{
+		overs.forEach(over => {
+			let runs = sumScores(over.runs);
+			if (runs + over.extras == 0) {
+				numberOfMaidens++;
+			}
+			totalRunsForBowler += runs + over.extras;
+			numberOfWickets += over.runs.filter(item => item === 'W').length;
+		});
+	}
+	
+	return [numberOfMaidens, totalRunsForBowler, numberOfWickets];
+  }
+
+  function restructureByBowler(scoreboard) {
+	const bowlers = {};
+  
+	let bowlerName = '';
+	// Start from index 1 to skip first team innings
+	for (let i = 1; i < scoreboard.length; i++) {
+		bowlerName = scoreboard[i][2];
+		if (!bowlers[bowlerName]) {
+		  bowlers[bowlerName] = [];
+		}
+		bowlers[bowlerName].push({
+		  runs: scoreboard[i][0],
+		  extras: scoreboard[i][1]
+		});
+	}
+	
+	return bowlers;
   }
 
 //#endregion  
