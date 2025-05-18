@@ -297,6 +297,13 @@
 	box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   }
   
+  .bowler-card {
+	margin-top: 0px;
+	background-color: rgb(15, 216, 219);
+	border-radius: 5px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  
   .editable-name {
 	cursor: pointer;
 	border-bottom: 1px dashed #5028ff;

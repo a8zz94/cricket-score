@@ -131,6 +131,18 @@
           <button class="btn btn-outline-primary btn-custom btn-custom-sm btn-wicket" id="run_W">Wicket</button>
         </div>
 
+        <div class="bowler-display mt-0 mb-0">
+          <div class="row">
+            <div class="col-12">
+              <div class="bowler-card p-2">
+                <span id="bowler-name" class="editable-name" onclick="editBowlerName()">Bowler 1</span>
+                <img src="/icons/ball.png" alt="*" class="bat-icon">
+                (<span id="bowler-wickets">0</span>-<span id="bowler-runs">0</span>)
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="col-5 my-auto zoom py-4 px-1 run-btn">
           <button type="button" class="btn btn-info btn-custom btn-custom-sm" data-toggle="modal" data-target="#myModal"
             id="scoreboard-btn">Scoreboard</button>

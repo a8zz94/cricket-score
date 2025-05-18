@@ -136,6 +136,7 @@ function update_score() {
   updateHtml("#run", runs);
   updateHtml("#wickets", wickets);
   updateBatsmenDisplay();
+  updateBowlerDisplay();
 }
 
 function recordDelivery(run, strikerIdx) {
@@ -198,8 +199,18 @@ function editPlayerName(playerIndex) {
 	if (newName !== null && newName.trim() !== "") {
 	  players[playerIndex].name = newName.trim();
 	  updateBatsmenDisplay();
+	  updateScorecard();
 	}
   }
+
+function editBowlerName() {
+	const newName = prompt("Enter bowler name:", scoreboard[over_no][2]);
+	if (newName !== null && newName.trim() !== "") {
+	  scoreboard[over_no][2] = newName.trim();
+	  updateBowlerDisplay();
+	  updateScorecard();
+	}
+}
   
   // Function to swap striker and non-striker
   function swapBatsmen() {
@@ -478,6 +489,14 @@ function updateHtml(eleId, newHtml) {
 	$("#nonstriker-runs").text(nonStrikerScore);
 	$("#nonstriker-balls").text(nonStrikerNumberOfBalls);
   }
+
+  function updateBowlerDisplay() {
+	let currentBowlerScorecard = restructureByBowler(scoreboard)[scoreboard[over_no][2]];
+	let maidensAndRunsAndWickets = calculateNumberOfMadiens(currentBowlerScorecard);
+	$("#bowler-name").text(scoreboard[over_no][2]);
+	$("#bowler-runs").text(maidensAndRunsAndWickets[1]);
+	$("#bowler-wickets").text(maidensAndRunsAndWickets[2]);
+  }
   
 //#endregion
 
@@ -513,6 +532,7 @@ function back_button() {
 	update_score();
 	update_runboard();
 	updateBatsmenDisplay();
+	updateBowlerDisplay();
 	updateHtml(
 	  "#over-ball",
 	  (over_no - 1).toString() + "." + (ball_no - 1).toString()
