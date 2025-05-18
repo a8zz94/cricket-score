@@ -56,16 +56,8 @@ $(document).ready(function () {
 	$("#scoreboard-btn").on("click", function (event) {
 		updateScorecard()
 	});
-	init();
 });
 
-function init() {
-	const urlParams = new URLSearchParams(window.location.search);
-	console.log("urlParams.get()");
-	console.log(urlParams.get("debug"));
-	if (urlParams.get("debug") == null || urlParams.get("debug") != "true")
-		$("#messages").hide();
-}
 
 function shareModeStart() {
 	isShareMode = true;
@@ -184,19 +176,8 @@ function update_score() {
 	let score = 0;
 	let wickets = 0;
 
-	allDeliveries.forEach((delivery) => {
-		if (delivery.run == "+" || delivery.run == "NB") {
-			score++;
-		}
-		if (!isNaN(delivery.run)) {
-			score += delivery.run;
-		}
-		if (delivery.run == "W") {
-			wickets++;
-		}
-	});
 	// console.log(wickets);
-	runs = score;
+	runs = sumScores(allDeliveries.map(d => d.run));
 	updateTarget();
 	updateHtml("#run", runs);
 	updateHtml("#wickets", wickets);
