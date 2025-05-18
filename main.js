@@ -90,7 +90,6 @@ function play_ball(run, score = 1) {
 		runs++;
 		scoreboard[over_no][1] += 1;
 		update_score();
-		updateScorecard();
 		return;
 	}
 	if (run == "NB") {
@@ -186,17 +185,14 @@ function update_score() {
 	let wickets = 0;
 
 	allDeliveries.forEach((delivery) => {
-		if (delivery.run == "+") {
-			score++;
-		}
-		if (delivery.run == "W") {
-			wickets++;
-		}
-		if (delivery.run == "NB") {
+		if (delivery.run == "+" || delivery.run == "NB") {
 			score++;
 		}
 		if (!isNaN(delivery.run)) {
 			score += delivery.run;
+		}
+		if (delivery.run == "W") {
+			wickets++;
 		}
 	});
 	// console.log(wickets);
@@ -205,7 +201,6 @@ function update_score() {
 	updateHtml("#run", runs);
 	updateHtml("#wickets", wickets);
 	updateBatsmenDisplay();
-	updateScorecard();
 }
 
 function back_button() {
@@ -371,7 +366,6 @@ function editPlayerName(playerIndex) {
 	if (newName !== null && newName.trim() !== "") {
 	  players[playerIndex].name = newName.trim();
 	  updateBatsmenDisplay();
-	  updateScorecard();
 	}
   }
   
@@ -398,7 +392,6 @@ function editPlayerName(playerIndex) {
 	striker = nonStriker;
 	nonStriker = temp;
 	updateBatsmenDisplay();
-	updateScorecard();
   }
   
   // Function to bring in new batsman (after wicket)
@@ -407,7 +400,6 @@ function editPlayerName(playerIndex) {
 	  striker = nextBatsman;
 	  nextBatsman++;
 	  updateBatsmenDisplay();
-	  updateScorecard();
 	} else {
 	  alert("All out!");
 	  // Handle all out scenario
