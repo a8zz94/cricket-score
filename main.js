@@ -58,9 +58,7 @@ $(document).ready(function () {
 	$("#run_W").on("click", function (event) {
 		play_ball("W", 0);
 	});
-	$("#scoreboard-btn").on("click", function (event) {
-		updateScorecard()
-	});
+	updateScorecard();
 });
 
 function play_ball(run, score = 1) {
@@ -137,6 +135,7 @@ function update_score() {
   updateHtml("#wickets", wickets);
   updateBatsmenDisplay();
   updateBowlerDisplay();
+  updateScorecard();
 }
 
 function recordDelivery(run, strikerIdx) {
@@ -307,7 +306,7 @@ function updateScorecard() {
 	`;
 	
 	// Update the scorecard table
-	$('#batting-scorecard').html(scorecardHtml);
+	updateHtml("#batting-scorecard",scorecardHtml);
 	
 	bowlingScorecard();
   }
@@ -335,8 +334,7 @@ function updateScorecard() {
 		`;
 	}
 
-	$('#bowling-scorecard').html(scoreboardHtml);
-	
+	updateHtml("#bowling-scorecard", scoreboardHtml);
   }
 
   function calculateNumberOfMadiens(overs){
@@ -495,9 +493,9 @@ function updateHtml(eleId, newHtml) {
   function updateBowlerDisplay() {
 	let currentBowlerScorecard = restructureByBowler(scoreboard)[scoreboard[over_no][2]];
 	let maidensAndRunsAndWickets = calculateNumberOfMadiens(currentBowlerScorecard);
-	$("#bowler-name").text(scoreboard[over_no][2]);
-	$("#bowler-runs").text(maidensAndRunsAndWickets[1]);
-	$("#bowler-wickets").text(maidensAndRunsAndWickets[2]);
+	updateHtml("#bowler-name", scoreboard[over_no][2]);
+	updateHtml("#bowler-runs", maidensAndRunsAndWickets[1]);
+	updateHtml("#bowler-wickets", maidensAndRunsAndWickets[2]);
   }
   
 //#endregion
@@ -596,6 +594,10 @@ function sendInitVariables() {
 		"#nonstriker-name": $("#nonstriker-name").html(),
 		"#nonstriker-runs": $("#nonstriker-runs").html(),
 		"#nonstriker-balls": $("#nonstriker-balls").html(),
+		"#bowling-scorecard": $("#bowling-scorecard").html(),
+		"#batting-scorecard": $("#batting-scorecard").html(),
+		"#bowler-wickets": $("#bowler-wickets").html(),
+		"#bowler-runs": $("#bowler-runs").html(),
 	};
 	publishMessage(
 		JSON.stringify({
