@@ -127,11 +127,11 @@ function play_ball(run, score = 1) {
 
 //#region Scoring Logics 
 function update_score() {
-  let score = 0;
   let wickets = 0;
 
   // console.log(wickets);
   runs = sumScores(allDeliveries.map((d) => d.run));
+  wickets = allDeliveries.filter((d) => d.run == "W").length;
   updateTarget();
   updateHtml("#run", runs);
   updateHtml("#wickets", wickets);
@@ -476,18 +476,20 @@ function updateHtml(eleId, newHtml) {
   // Function to update batsmen display
   function updateBatsmenDisplay() {
 	var strikerScore = sumScores(players[striker].bowlsFaced);
-	var numberOfBalls = players[striker].bowlsFaced.length
-	// Update striker display
-	$("#striker-name").text(players[striker].name);
-	$("#striker-runs").text(strikerScore);
-	$("#striker-balls").text(numberOfBalls);
+	var numberOfBalls = players[striker].bowlsFaced.length;
 	
-	// Update non-striker display
 	var nonStrikerScore = sumScores(players[nonStriker].bowlsFaced);
-	var nonStrikerNumberOfBalls = players[nonStriker].bowlsFaced.length
-	$("#nonstriker-name").text(players[nonStriker].name);
-	$("#nonstriker-runs").text(nonStrikerScore);
-	$("#nonstriker-balls").text(nonStrikerNumberOfBalls);
+	var nonStrikerNumberOfBalls = players[nonStriker].bowlsFaced.length;
+	
+	// Update striker display using updateHtml (this will send MQTT messages)
+	updateHtml("#striker-name", players[striker].name);
+	updateHtml("#striker-runs", strikerScore);
+	updateHtml("#striker-balls", numberOfBalls);
+	
+	// Update non-striker display using updateHtml (this will send MQTT messages)
+	updateHtml("#nonstriker-name", players[nonStriker].name);
+	updateHtml("#nonstriker-runs", nonStrikerScore);
+	updateHtml("#nonstriker-balls", nonStrikerNumberOfBalls);
   }
 
   function updateBowlerDisplay() {
@@ -588,6 +590,12 @@ function sendInitVariables() {
 		"#wickets": $("#wickets").html(),
 		"#targetRunsRequired": $("#targetRunsRequired").html(),
 		"#targetBody": $("#targetBody").html(),
+		"#striker-name": $("#striker-name").html(),
+		"#striker-runs": $("#striker-runs").html(),
+		"#striker-balls": $("#striker-balls").html(),
+		"#nonstriker-name": $("#nonstriker-name").html(),
+		"#nonstriker-runs": $("#nonstriker-runs").html(),
+		"#nonstriker-balls": $("#nonstriker-balls").html(),
 	};
 	publishMessage(
 		JSON.stringify({
