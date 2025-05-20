@@ -325,7 +325,7 @@ function updateScorecard() {
 		scoreboardHtml += `
 		  <tr>
 			<td>${bowler}</td>
-			<td>${totalOvers - 1}.${currentOver.runs.length - 1}</td>
+			<td>${formatOvers(totalOvers, currentOver)}}</td>
 			<td>${maidensAndRunsAndWickets[0]}</td>
 			<td>${maidensAndRunsAndWickets[1]}</td>
 			<td>${maidensAndRunsAndWickets[2]}</td>
@@ -336,6 +336,18 @@ function updateScorecard() {
 
 	updateHtml("#bowling-scorecard", scoreboardHtml);
   }
+  
+  function formatOvers(totalOvers, currentOver) {
+    let overs = totalOvers - 1;
+    let balls = currentOver.runs.length - 1;
+
+    if (balls === 6) {
+        overs += 1;
+        balls = 0;
+    }
+
+    return `${overs}.${balls}`;
+}
 
   function calculateNumberOfMadiens(overs){
 	let totalRunsForBowler = 0;
