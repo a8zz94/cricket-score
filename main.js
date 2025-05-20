@@ -325,7 +325,7 @@ function updateScorecard() {
 		scoreboardHtml += `
 		  <tr>
 			<td>${bowler}</td>
-			<td>${formatOvers(totalOvers, currentOver)}}</td>
+			<td>${formatOvers(totalOvers, currentOver)}</td>
 			<td>${maidensAndRunsAndWickets[0]}</td>
 			<td>${maidensAndRunsAndWickets[1]}</td>
 			<td>${maidensAndRunsAndWickets[2]}</td>
