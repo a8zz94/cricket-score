@@ -329,7 +329,7 @@ function updateScorecard() {
 			<td>${maidensAndRunsAndWickets[0]}</td>
 			<td>${maidensAndRunsAndWickets[1]}</td>
 			<td>${maidensAndRunsAndWickets[2]}</td>
-			<td>${maidensAndRunsAndWickets[1] / totalOvers}</td>
+			<td>${(maidensAndRunsAndWickets[1] / totalOvers).toFixed(2)}</td>
 		</tr>
 		`;
 	}
