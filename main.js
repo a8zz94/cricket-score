@@ -61,7 +61,7 @@ $(document).ready(function () {
 	updateScorecard();
 });
 
-function play_ball(run, score = 1) {
+async function play_ball(run, score = 1) {
 	recordDelivery(run, striker);
 	if (run !== "+" && run !== "NB") {
 		// For normal deliveries (not extras)
@@ -109,12 +109,26 @@ function play_ball(run, score = 1) {
 		ball_no++;
 		if (ball_no >= 7) {
 			ball_no = 1;
-			over_no++;
-			scoreboard[over_no] =[
-				runs = [[0]],
-				extras = 0,
-				bowler = 'Bowler ' + over_no
-			]; //Wide bowls counter
+			over_no++;  
+			 //Wide bowls counter
+			 let newBowlerName;
+
+			 try {
+			   // Get the bowler name
+			   const selectedBowler = await showBowlerModalAsync();
+			   newBowlerName = selectedBowler || 'Bowler ' + over_no;
+			 } catch (error) {
+			   console.error("Error selecting bowler:", error);
+			   // Default name if error occurs
+			   newBowlerName = 'Bowler ' + over_no;
+			 }
+			 
+			 // Always create the new over with whatever name we have
+			 scoreboard[over_no] = [
+			   runs = [[0]],
+			   extras = 0,
+			   newBowlerName
+			 ];
 			swapBatsmen();
 		}
 	}
@@ -396,6 +410,85 @@ function updateScorecard() {
 //#endregion  
 
 //#region UI Modification
+function showBowlerModalAsync() {
+  return new Promise((resolve) => {
+    // Build the modal content
+    let modalContent = `
+      <div class="modal-body">
+        <h5>Select a bowler</h5>
+        <div class="list-group mb-3">`;
+    
+    // Get existing bowlers
+    const bowlers = restructureByBowler(scoreboard);
+    for(const bowler in bowlers) {
+      modalContent += `<button type="button" class="list-group-item list-group-item-action" 
+                        onclick="selectBowler('${bowler}')">${bowler}</button>`;
+    }
+    
+    // Add input for new bowler
+    modalContent += `
+        </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" id="new-bowler-input" placeholder="Input new bowler">
+          <button class="btn btn-primary" type="button" onclick="selectNewBowler()">Select</button>
+        </div>
+      </div>
+    `;
+    
+    // Set the modal content
+    $("#changeBowlerContainer").html(modalContent);
+    
+    // Define global functions to handle selections
+    window.selectedBowlerName = null;
+    window.bowlerModalResolved = false;
+    
+    window.selectBowler = function(name) {
+      window.selectedBowlerName = name;
+      window.bowlerModalResolved = true;
+      $("#changeBowlerModal").modal('hide');
+    };
+    
+    window.selectNewBowler = function() {
+      const newName = $("#new-bowler-input").val().trim();
+      if (newName) {
+        window.selectedBowlerName = newName;
+        window.bowlerModalResolved = true;
+        $("#changeBowlerModal").modal('hide');
+      }
+    };
+    
+    // Set up input field to respond to Enter key
+    document.getElementById("new-bowler-input").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        window.selectNewBowler();
+      }
+    });
+    
+    // Show the modal
+    $("#changeBowlerModal").modal('show');
+    
+    // Handle modal hidden event - this fires no matter how the modal is closed
+    $("#changeBowlerModal").on('hidden.bs.modal', function () {
+      // Always resolve the promise, regardless of how modal was closed
+      if (window.bowlerModalResolved && window.selectedBowlerName) {
+        resolve(window.selectedBowlerName);
+      } else {
+        // Default if modal was closed without selection (X button, escape, clicking outside, etc.)
+        resolve("Bowler " + over_no);
+      }
+      
+      // Clean up global functions and variables
+      window.selectBowler = undefined;
+      window.selectNewBowler = undefined;
+      window.selectedBowlerName = undefined;
+      window.bowlerModalResolved = undefined;
+      
+      // Remove the event handler to prevent memory leaks
+      $("#changeBowlerModal").off('hidden.bs.modal');
+    });
+  });
+}
+
 function noBall(is_NoBall) {
 	isNoBall = is_NoBall;
 	var run_no_ball = $("#run_no_ball");
