@@ -343,6 +343,11 @@ function updateScorecard() {
 	for (const bowler in bowlerScorecard) {
 		totalOvers = bowlerScorecard[bowler].length;
 		let currentOver = bowlerScorecard[bowler][totalOvers - 1];
+		let economy = 0;
+		if(currentOver.runs.length <= 6) {
+			economy = totalOvers - 1;
+			economy = economy + (currentOver.runs.length - 1) / 6;
+		}
 		console.log(currentOver);	
 		maidensAndRunsAndWickets = calculateNumberOfMadiens(bowlerScorecard[bowler]);
 		scoreboardHtml += `
@@ -352,7 +357,7 @@ function updateScorecard() {
 			<td>${maidensAndRunsAndWickets[0]}</td>
 			<td>${maidensAndRunsAndWickets[1]}</td>
 			<td>${maidensAndRunsAndWickets[2]}</td>
-			<td>${(maidensAndRunsAndWickets[1] / totalOvers).toFixed(2)}</td>
+			<td>${economy === 0 ? '0.00' : (maidensAndRunsAndWickets[1] / economy).toFixed(2)}</td>
 		</tr>
 		`;
 	}
@@ -386,7 +391,7 @@ function updateScorecard() {
 	{
 		overs.forEach(over => {
 			let runs = sumScores(over.runs);
-			if (runs + over.extras == 0) {
+			if (over.runs.length >=6 && runs + over.extras == 0) {
 				numberOfMaidens++;
 			}
 			totalRunsForBowler += runs + over.extras;
