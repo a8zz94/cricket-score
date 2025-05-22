@@ -1,6 +1,8 @@
 //#region Global Variables
 var currentMatchCode = null;
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3001/api'  // Local development
+  : 'https://cricket-api.kode8.dev/api';  // Clean production URL with HTTPS
 
 var scoreboard = [
 	[],
