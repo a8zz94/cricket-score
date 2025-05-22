@@ -347,6 +347,9 @@ function updateScorecard() {
 		if(currentOver.runs.length <= 6) {
 			economy = totalOvers - 1;
 			economy = economy + (currentOver.runs.length - 1) / 6;
+		}else
+		 {
+			economy = totalOvers;
 		}
 		console.log(currentOver);	
 		maidensAndRunsAndWickets = calculateNumberOfMadiens(bowlerScorecard[bowler]);
