@@ -854,7 +854,10 @@ async function listMatches() {
       console.log(result.matches);
       
       // Build HTML for the matches list
-      let matchesHtml = '';
+      let matchesHtml = `
+	  	<button class="btn btn-outline-secondary btn-sm" onclick="loadRecentMatches()">
+                  Show Recent Matches
+                </button>`;
       
       if (result.matches.length === 0) {
         matchesHtml = '<p class="text-muted">No matches found</p>';
