@@ -1,4 +1,7 @@
 //#region Global Variables
+var currentMatchCode = null;
+const API_BASE = 'http://localhost:3001/api';
+
 var scoreboard = [
 	[],
 	[
@@ -59,7 +62,8 @@ $(document).ready(function () {
 		play_ball("W", 0);
 	});
 	updateScorecard();
-});
+	createNewMatch();
+	});
 
 async function play_ball(run, score = 1) {
 	recordDelivery(run, striker);
@@ -133,6 +137,9 @@ async function play_ball(run, score = 1) {
 		}
 	}
 	update_score();
+	if (currentMatchCode) {
+    await saveMatchState();
+  }
 }
 
 //#endregion
@@ -713,3 +720,171 @@ function sendInitVariables() {
 }
 
 //#endregion
+
+async function createNewMatch() {
+  try {
+    const response = await fetch(`${API_BASE}/match/create`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'}
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      currentMatchCode = result.matchCode;
+         
+      // Update UI to show match code
+      updateMatchCodeDisplay();
+      
+      return currentMatchCode;
+    } 
+  } catch (error) {
+    console.error('Failed to create match:', error);
+  }
+}
+
+async function saveMatchState() {
+  if (!currentMatchCode) {
+    return;
+  }
+  
+  const matchData = {
+    scoreboard, players, allDeliveries, 
+    ball_no, over_no, runs, striker, nonStriker, nextBatsman,
+    isNoBall, isTargetMode, targetRuns, targetOvers,
+    bowlerScorecard
+  };
+  
+  try {
+    const response = await fetch(`${API_BASE}/match/save`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ matchCode: currentMatchCode, matchData })
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+      updateMatchCodeDisplay(); // Update last saved time
+    }
+  } catch (error) {
+    console.error('Save failed:', error);
+  }
+}
+
+async function loadMatchByCode(matchCode = null) {
+  if (!matchCode) {
+    matchCode = prompt('Enter match code:');
+    if (!matchCode) return;
+  }
+  
+  matchCode = matchCode.toUpperCase().trim();
+  
+  if (allDeliveries.length > 0) {
+    if (!confirm('Loading will overwrite current match. Continue?')) {
+      return;
+    }
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/match/load/${matchCode}`);
+    const result = await response.json();
+    
+    if (result.success) {
+      const data = result.data;
+      currentMatchCode = matchCode;
+      
+      // Restore all your variables
+      scoreboard = data.scoreboard || [[], [runs = [[0]], extras = 0, bowler = 'Bowler 1']];
+      players = data.players || Array(11).fill().map((_, i) => ({ name: "Player " + (i+1), bowlsFaced: [] }));
+      allDeliveries = data.allDeliveries || [];
+      ball_no = data.ball_no || 0;
+      over_no = data.over_no || 1;
+      runs = data.runs || 0;
+      striker = data.striker || 0;
+      nonStriker = data.nonStriker || 1;
+      nextBatsman = data.nextBatsman || 2;
+      isNoBall = data.isNoBall || false;
+      isTargetMode = data.isTargetMode || false;
+      targetRuns = data.targetRuns || -1;
+      targetOvers = data.targetOvers || -1;
+      bowlerScorecard = data.bowlerScorecard || [];
+      
+      // Clear any no-ball state
+      noBall(false);
+      
+      // Update all displays
+      update_score();
+      update_runboard();
+      updateBatsmenDisplay();
+      updateBowlerDisplay();
+      updateScorecard();
+      
+      // Handle target mode
+      if (isTargetMode) {
+        setTarget(true);
+      }
+      
+      updateMatchCodeDisplay();
+      
+    } else {
+    }
+  } catch (error) {
+    console.error('Load failed:', error);
+  }
+}
+
+function updateMatchCodeDisplay() {
+  if (currentMatchCode) {
+    const displayText = `Match Code: ${currentMatchCode}`;
+    // You can add this to any part of your UI
+    updateHtml("#match-code-display", displayText);
+  }
+  else {
+    const displayText = `Failed to generate match code`;
+    // You can add this to any part of your UI
+    updateHtml("#match-code-display", displayText);
+  }
+}
+async function listMatches() {
+  try {
+    const response = await fetch(`${API_BASE}/matches`);
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log(result.matches);
+      
+      // Build HTML for the matches list
+      let matchesHtml = '';
+      
+      if (result.matches.length === 0) {
+        matchesHtml = '<p class="text-muted">No matches found</p>';
+      } else {
+        result.matches.forEach(match => {
+          const date = new Date(match.lastUpdated).toLocaleDateString();
+          const time = new Date(match.lastUpdated).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          
+          matchesHtml += `
+            <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+              <button class="btn btn-outline-primary btn-sm" onclick="loadMatchByCode('${match.matchCode}')" data-dismiss="modal">
+                ${match.matchCode}
+              </button>
+              <small class="text-muted">${date} ${time}</small>
+            </div>
+          `;
+        });
+      }
+      
+      updateHtml("#recent-matches-list", matchesHtml);
+      return result.matches;
+    }
+  } catch (error) {
+    console.error('Failed to list matches:', error);
+    updateHtml("#recent-matches-list", '<p class="text-danger">Failed to load matches</p>');
+  }
+  return [];
+}
+
+async function loadRecentMatches() {
+  updateHtml("#recent-matches-list", '<p class="text-muted">Loading...</p>');
+  await listMatches();
+}

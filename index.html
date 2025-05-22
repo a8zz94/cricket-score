@@ -147,7 +147,9 @@
           <button type="button" class="btn btn-info btn-custom btn-custom-sm" data-toggle="modal" data-target="#myModal"
             id="scoreboard-btn">Scoreboard</button>
         </div>
-        <div class="col-2 my-auto zoom py-4 px-1 run-btn"></div>
+          <div class="col-2 match-code-section mt-2 mb-2 text-center">
+            <small id="match-code-display" class="text-muted"></small>
+          </div>
         <div class="col-5 my-auto zoom py-4 px-1 run-btn">
           <button type="button" class="btn btn-secondary btn-custom btn-custom-sm" data-toggle="modal"
             data-target="#myModal2">Undo</button>
@@ -156,10 +158,11 @@
 
       <div class="d-flex justify-content-between">
           <button type="button" class="btn btn-link" data-toggle="modal" data-target="#TargetModal"
-          id="targetModeButton">Target mode</button>
+          id="targetModeButton">Target mode</button>            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#matchManagementModal">Match</button>
         <button type="button" class="btn btn-link" data-toggle="modal" data-target="#shareModal"
           id="targetModeButton">Share match Code</button>
       </div>
+      
         <div class="text-center small">
           <span class="fw-bold text-primary">Oxford Strikers C.C. Cricket Scorer</span> 
           <span class="text-muted mx-1">|</span> 
@@ -331,6 +334,33 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="matchManagementModal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Match Management</h4>
+            <button type="button" class="btn close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-6">
+                <button class="btn btn-primary btn-block" onclick="loadMatchByCode()" data-dismiss="modal">
+                  Load Match
+                </button>
+              </div>
+            </div>
+            <div class="col-6">
+              <div id="recent-matches-list">
+                <button class="btn btn-outline-secondary btn-sm" onclick="loadRecentMatches()">
+                  Show Recent Matches
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
 
   </div>
 
