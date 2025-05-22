@@ -739,6 +739,7 @@ async function createNewMatch() {
       return currentMatchCode;
     } 
   } catch (error) {
+	updateMatchCodeDisplay();
     console.error('Failed to create match:', error);
   }
 }
@@ -797,7 +798,7 @@ async function loadMatchByCode(matchCode = null) {
       scoreboard = data.scoreboard || [[], [runs = [[0]], extras = 0, bowler = 'Bowler 1']];
       players = data.players || Array(11).fill().map((_, i) => ({ name: "Player " + (i+1), bowlsFaced: [] }));
       allDeliveries = data.allDeliveries || [];
-      ball_no = data.ball_no || 0;
+      ball_no = data.ball_no || 1;
       over_no = data.over_no || 1;
       runs = data.runs || 0;
       striker = data.striker || 0;
