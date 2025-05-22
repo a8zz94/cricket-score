@@ -879,10 +879,11 @@ async function listMatches() {
           
           matchesHtml += `
             <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
-              <button class="btn btn-outline-primary btn-sm" onclick="loadMatchByCode('${match.matchCode}')" data-dismiss="modal">
+              <button class="btn btn-outline-primary btn-sm col-4" onclick="loadMatchByCode('${match.matchCode}')" data-dismiss="modal">
                 ${match.matchCode}
               </button>
-              <small class="text-muted">${date} ${time}</small>
+              <small class="text-muted col-4 ms-2">${date} ${time}</small>
+			  <button class="btn btn-outline-danger btn-sm col-4" onclick="deleteMatch('${match.matchCode}')" data-dismiss="modal">Delete</button>
             </div>
           `;
         });
@@ -901,4 +902,46 @@ async function listMatches() {
 async function loadRecentMatches() {
   updateHtml("#recent-matches-list", '<p class="text-muted">Loading...</p>');
   await listMatches();
+}
+
+async function deleteMatch(matchCode) {
+  if (!matchCode) {
+    matchCode = prompt('Enter match code to delete:');
+    if (!matchCode) return;
+  }
+  
+  matchCode = matchCode.toUpperCase().trim();
+  
+  if (!confirm(`Are you sure you want to delete match ${matchCode}? This cannot be undone.`)) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/match/${matchCode}`, {
+      method: 'DELETE'
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      alert(`Match ${matchCode} deleted successfully!`);
+      
+      // If we deleted the current match, clear the UI
+      if (currentMatchCode === matchCode) {
+        currentMatchCode = null;
+        resetGameState();
+        updateMatchCodeDisplay();
+      }
+      
+      // Refresh matches list if displayed
+      if (document.getElementById('recent-matches-list').innerHTML.includes('btn-outline-primary')) {
+        await listMatches();
+      }
+    } else {
+      alert('Delete failed: ' + result.error);
+    }
+  } catch (error) {
+    console.error('Delete failed:', error);
+    alert('Delete failed - check if backend is running');
+  }
 }
