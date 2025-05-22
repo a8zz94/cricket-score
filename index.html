@@ -133,24 +133,30 @@
 
         <div class="bowler-display mt-0 mb-0">
           <div class="row">
-            <div class="col-12">
+            <div class="col-6">
               <div class="bowler-card p-2">
                 <span id="bowler-name" class="editable-name" onclick="editBowlerName()">Bowler 1</span>
                 <img src="/icons/ball.png" alt="*" class="bat-icon">
                 (<span id="bowler-wickets">0</span>-<span id="bowler-runs">0</span>)
               </div>
             </div>
+            <div class="col-6">
+              <div class="btn-action p-2">
+                <span id="bowler-name" onclick="swapBatsmen()">Swap Batsman</span>
+              
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="col-5 my-auto zoom py-4 px-1 run-btn">
+        <div class="col-4 my-auto zoom py-4 px-1 run-btn">
           <button type="button" class="btn btn-info btn-custom btn-custom-sm" data-toggle="modal" data-target="#myModal"
             id="scoreboard-btn">Scoreboard</button>
         </div>
-          <div class="col-2 match-code-section mt-2 mb-2 text-center">
+          <div class="col-3 text-center  my-auto zoom py-4 px-1">
             <small id="match-code-display" class="text-muted"></small>
           </div>
-        <div class="col-5 my-auto zoom py-4 px-1 run-btn">
+        <div class="col-4 my-auto zoom py-4 px-1 run-btn">
           <button type="button" class="btn btn-secondary btn-custom btn-custom-sm" data-toggle="modal"
             data-target="#myModal2">Undo</button>
         </div>
@@ -165,8 +171,6 @@
       
         <div class="text-center small">
           <span class="fw-bold text-primary">Oxford Strikers C.C. Cricket Scorer</span> 
-          <span class="text-muted mx-1">|</span> 
-          <span class="text-muted">forked from <a href="https://github.com/Sahil3201" class="text-decoration-none">@Sahil3201</a></span>
         </div>
     </div>
     <!-- These are the action buttons -->
