@@ -118,6 +118,11 @@
 	color: var(--text-light);
   }
   
+  .btn-runout {
+	background-color: var(--muted);
+	color: var(--text-light);
+  }
+  
   .btn-link {
 	color: var(--primary-color);
 	text-decoration: none;

@@ -25,7 +25,8 @@ var allDeliveries = []; //Run and Striker Index
 // Add these variables
 var players = Array(11).fill().map((_, i) => ({ 
     name: "Player " + (i+1), 
-	bowlsFaced: [] 
+	bowlsFaced: [],
+	index: i
 }));
 var striker = 0; // Index of striker batsman
 var nonStriker = 1; // Index of non-striker batsman
@@ -72,8 +73,7 @@ $(document).ready(function () {
 
 async function play_ball(run, score = 1) {
 	if (run == "RO") {
-		players[striker].bowlsFaced.push("RO");
-		newBatsman();
+		retireBatsman();
 		updateScorecard();
 		return;
 	}
@@ -251,16 +251,67 @@ function editBowlerName() {
 	updateBatsmenDisplay();
   }
   
+  // Function to retire batsman
+  function retireBatsman() {
+    players[striker].bowlsFaced.push("RO");
+    if (nextBatsman < 11) {
+      striker = nextBatsman;
+      nextBatsman++;
+      updateBatsmenDisplay();
+    } else {
+      alert("All out!");
+      // Handle all out scenario
+    }
+  }
+
+
   // Function to bring in new batsman (after wicket)
   function newBatsman() {
-	if (nextBatsman < 11) {
-	  striker = nextBatsman;
-	  nextBatsman++;
-	  updateBatsmenDisplay();
-	} else {
-	  alert("All out!");
-	  // Handle all out scenario
-	}
+    var allRetired = players.filter((player) =>
+      player.bowlsFaced.includes("RO")
+    );
+    //display modal with retired players
+    if (allRetired.length > 0) {
+      let retiredPlayersHtml = "";
+      allRetired.forEach((player) => {
+        retiredPlayersHtml += `<button type="button" class="list-group-item list-group-item-action"
+				onclick="selectRetiredPlayer(${player.index})">${player.name}</button>`;
+      });
+	  retiredPlayersHtml += `<button type="button" class="list-group-item list-group-item-action"
+	  				onclick="selectNewBatsman()">New Batsman</button>`;
+      $("#retiredPlayersList").html(retiredPlayersHtml);
+      $("#retiredPlayersModal").modal("show");
+    } else {
+      // If no retired players, just bring in the next batsman
+     setNextBatsman();
+    }
+  }
+
+  function selectRetiredPlayer(playerIndex) {
+	// Bring back the selected retired player
+	players[playerIndex].bowlsFaced.pop(); // Remove "RO" from their bowlsFaced
+	striker = playerIndex;
+	nextBatsman = Math.max(nextBatsman, playerIndex + 1); // Update next batsman if needed
+	$("#retiredPlayersModal").modal("hide");
+	updateBatsmenDisplay();
+	updateScorecard();
+  }
+
+  function setNextBatsman() {
+	 if (nextBatsman < 11) {
+      striker = nextBatsman;
+      nextBatsman++;
+    } else {
+      alert("All out!");
+      // Handle all out scenario
+    }
+  }
+  // Function to select a new batsman instead of a retired player
+  function selectNewBatsman() {
+   	setNextBatsman();
+    $("#retiredPlayersModal").modal("hide");
+    updateBatsmenDisplay();
+    updateScorecard();
   }
 
 // Function to update the player scorecard
