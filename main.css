@@ -118,8 +118,8 @@
 	color: var(--text-light);
   }
   
-  .btn-runout {
-	background-color: var(--muted);
+  .btn-retire {
+	background-color: var(--text-dark);
 	color: var(--text-light);
   }
   
@@ -324,6 +324,12 @@
 	vertical-align: baseline;  /* Align with text */
 	margin-left: 2px;  /* Small space after name */
 	margin-right: 2px;  /* Small space before runs */
+  }
+
+  .retire-icon {
+	height: 3rem;
+	width: auto;  /* Maintain aspect ratio */
+	padding: 0;
   }
 
   #playerScorecard {
