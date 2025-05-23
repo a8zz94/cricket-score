@@ -63,11 +63,20 @@ $(document).ready(function () {
 	$("#run_W").on("click", function (event) {
 		play_ball("W", 0);
 	});
+	$("#run_RO").on("click", function (event) {
+		play_ball("RO", 0);
+	});
 	updateScorecard();
 	createNewMatch();
 	});
 
 async function play_ball(run, score = 1) {
+	if (run == "RO") {
+		players[striker].bowlsFaced.push("RO");
+		newBatsman();
+		updateScorecard();
+		return;
+	}
 	recordDelivery(run, striker);
 	if (run !== "+" && run !== "NB") {
 		// For normal deliveries (not extras)
@@ -273,8 +282,9 @@ function updateScorecard() {
 	  let playerSixes = player.bowlsFaced.filter(x => x === 6).length;
 	  let playerFours = player.bowlsFaced.filter(x => x === 4).length;
 	  let playerRuns = sumScores(player.bowlsFaced);
-	  let playerBalls = player.bowlsFaced.length;
+	  let playerBalls = player.bowlsFaced.filter(x => x !== "RO").length;
 	  let isOut = player.bowlsFaced.includes("W");
+	  let isRetired = player.bowlsFaced.includes("RO");
 	  if(hasNotBatted) {
 		continue; // Skip players who haven't batted
 	  }
@@ -291,6 +301,7 @@ function updateScorecard() {
 			<span onclick="editPlayerName(${i})">${player.name}</span> 
 			${isStriker ? '<img src="/icons/cricket-bat.png" alt="*" class="bat-icon">' : ''}
 			${isOut ? '<img src="/icons/out.png" alt="(out)" class="bat-icon">' : ''}
+			${isRetired ? '<img src="/icons/retired.png" alt="(out)" class="bat-icon">' : ''}
 			${isNonStriker ? '<span class="text-muted">not out</span>' : ''}
 		  </td>
 		  <td>${hasNotBatted ? '-' : playerRuns}</td>
