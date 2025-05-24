@@ -363,7 +363,7 @@ function updateScorecard() {
 	  scorecardHtml += `
 		<tr>
 		  <td>
-			<span onclick="editPlayerName(${i})">${player.name}</span> 
+			<span class="editable-player" onclick="editPlayerName(${i})">${player.name}</span> 
 			${isStriker ? '<img src="/icons/cricket-bat.png" alt="*" class="bat-icon">' : ''}
 			${isOut ? '<img src="/icons/out.png" alt="(out)" class="bat-icon">' : ''}
 			${isRetired ? '<img src="/icons/retired.png" alt="(out)" class="bat-icon">' : ''}
@@ -431,7 +431,7 @@ function updateScorecard() {
 		maidensAndRunsAndWickets = calculateNumberOfMadiens(bowlerScorecard[bowler]);
 		scoreboardHtml += `
 		  <tr>
-			<td>${bowler}</td>
+			<td onclick="changeBowlerName('${bowler}')"><span class="editable-player" >${bowler}</span></td>
 			<td>${formatOvers(totalOvers, currentOver)}</td>
 			<td>${maidensAndRunsAndWickets[0]}</td>
 			<td>${maidensAndRunsAndWickets[1]}</td>
@@ -442,6 +442,17 @@ function updateScorecard() {
 	}
 
 	updateHtml("#bowling-scorecard", scoreboardHtml);
+  }
+
+  function changeBowlerName(bowler) {
+	let newName = prompt("Enter new bowler name:", bowler);
+	for (let i = 1; i < scoreboard.length; i++) {
+		if (scoreboard[i][2] === bowler) {
+			scoreboard[i][2] = newName;
+		}
+	}
+	updateScorecard();
+	updateBowlerDisplay();
   }
   
   function formatOvers(totalOvers, currentOver) {
