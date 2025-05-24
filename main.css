@@ -1,229 +1,554 @@
+/* UPDATED CSS - Modern styling for your exact structure */
+
 :root {
-	/* Primary color palette - Cricket green theme */
-	--primary-color: #1e7e34;       /* Deep green */
-	--secondary-color: #2a9d8f;     /* Teal accent */
-	--accent-color: #f8c105;        /* Cricket ball gold */
-	--light-bg: #f0f7f4;            /* Light background */
-	--dark-bg: #243e36;             /* Dark green for contrast */
-	--text-light: #ffffff;          /* Text on dark backgrounds */
-	--text-dark: #2d3748;           /* Text on light backgrounds */
-	--success: #38a169;             /* Success green */
-	--danger: #e53e3e;              /* Danger red */
-	--muted: #718096;               /* Muted text */
-	--border-color: #e2e8f0;        /* Light border */
-  }
-  
-  html,
-  body,
-  .container {
-	margin: 0px;
-	max-width: 100%;
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	background-color: var(--light-bg);
-	color: var(--text-dark);
-  }
-  
-  .col-left-custom,
-  .col-left-custom {
-	width: 100%;
-  }
-  
-  /* Header styling */
-  .header-area {
-	background-color: var(--primary-color);
-	color: var(--text-light);
-	padding: 15px;
-	border-radius: 0 0 10px 10px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	margin-bottom: 20px;
-  }
-  
-  /* Scoreboard styling */
-  .scoreboard-display {
-	background-color: white;
-	border-radius: 8px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-	padding: 10px 10px 0px 10px;
-	margin-bottom: 30px;
-	margin-top:10px;
-  }
-  
-  .score-number {
-	font-size: 2.5rem;
-	font-weight: bold;
-	color: var(--primary-color);
-  }
-  
-  .wickets-number {
-	font-size: 2rem;
-	color: var(--danger);
-  }
-  
-  .over-ball-style {
-	width: 2.2rem;
-	height: 2.2rem;
-	border: none;
-	font-weight: bold;
-  }
-  
-  /* Button styling */
-  .btn-custom {
-	display: inline-block;
-	width: 100%;
-	border-radius: 8px;
-	transition: all 0.2s ease;
-	border: none;
-  }
-  
-  .btn-custom-lg {
-	height: 4.5em;
-	font-size: 1.1em;
-	font-weight: 600;
-  }
-  
-  .btn-custom-sm {
-	height: 3em;
-  }
-  
-  .btn-run {
-	background-color: var(--secondary-color);
-	color: var(--text-light);
-  }
-  
-  .btn-run:hover {
-	background-color: var(--primary-color);
-	transform: translateY(-2px);
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
-  
-  .btn-action {
-	background-color: var(--accent-color);
-	color: var(--text-dark);
-	font-weight: bold;
-  }
-  
-  .btn-action:hover {
-	background-color: #e0ac00;
-	transform: translateY(-2px);
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
-  
-  .btn-wide {
-	background-color: var(--dark-bg);
-	color: var(--text-light);
-  }
-  
-  .btn-wicket {
-	background-color: var(--danger);
-	color: var(--text-light);
-  }
-  
-  .btn-retire {
-	background-color: var(--text-dark);
-	color: var(--text-light);
-  }
-  
-  .btn-link {
-	color: var(--primary-color);
-	text-decoration: none;
-	font-weight: 500;
-  }
-  
-  .btn-link:hover {
-	color: var(--secondary-color);
-	text-decoration: underline;
-  }
-  
-  /* Table styling */
-  table {
-	font-family: inherit;
-	border-collapse: separate;
-	border-spacing: 0;
-	width: 100%;
-	border-radius: 8px;
-	overflow: hidden;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-  }
-  
-  td, th {
-	border: none;
-	text-align: left;
-	padding: 12px 15px;
-  }
-  
-  th {
-	background-color: var(--primary-color);
-	color: var(--text-light);
-	font-weight: 600;
-  }
-  
-  tr:nth-child(even) {
-	background-color: #f5f9f7;
-  }
-  
-  tr:nth-child(odd) {
-	background-color: white;
-  }
-  
-  tr:hover {
-	background-color: #edf7f4;
-  }
-  
-  /* Modal styling */
-  .modal-content {
-	border-radius: 10px;
-	border: none;
-  }
-  
-  .modal-header {
-	background-color: var(--primary-color);
-	color: var(--text-light);
-	border-radius: 10px 10px 0 0;
-  }
-  
-  .modal-footer {
-	border-top: 1px solid var(--border-color);
-  }
-  
-  /* Sharing status icon */
-  .sharing-status-corner {
-	position: fixed;
-	top: 15px;
-	right: 15px;
-	z-index: 1000;
-	background-color: white;
-	border-radius: 50%;
-	padding: 5px;
-	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-	width: 40px;
-	height: 40px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: 2px solid var(--primary-color);
-	transition: all 0.3s ease;
-  }
-  
-  .sharing-status-corner:hover {
-	transform: scale(1.1);
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  }
-  
-  .connection-icon {
-	width: 24px;
-	height: 24px;
-  }
-  
-  /* Target mode styling */
-  .target-display {
-	background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-	color: var(--text-light);
-	padding: 15px;
-	border-radius: 8px;
-	margin-top: 15px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
+  --primary-green: #10b981;
+  --primary-green-dark: #059669;
+  --primary-green-light: #34d399;
+  --accent-orange: #f59e0b;
+  --accent-orange-dark: #d97706;
+  --danger-red: #ef4444;
+  --danger-red-dark: #dc2626;
+  --info-blue: #3b82f6;
+  --neutral-50: #f9fafb;
+  --neutral-100: #f3f4f6;
+  --neutral-200: #e5e7eb;
+  --neutral-300: #d1d5db;
+  --neutral-400: #9ca3af;
+  --neutral-600: #4b5563;
+  --neutral-700: #374151;
+  --neutral-800: #1f2937;
+  --neutral-900: #111827;
+}
+
+/* Keep your original structure but add modern styling */
+html, body, .container {
+  margin: 0px;
+  max-width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  color: var(--neutral-900);
+}
+
+/* Modern scoreboard */
+.scoreboard-display {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 20px;
+  padding: 16px; /* Reduced padding since it's more compact */
+  margin-bottom: 16px;
+  text-align: center;
+  box-shadow: 
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.score-line {
+  position: relative;
+  display: flex;
+  justify-content: center; /* Keep score centered */
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+
+.scoreboard-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-green) 0%, var(--accent-orange) 100%);
+  border-radius: 20px 20px 0 0;
+}
+
+.score-container {
+  display: flex;
+  align-items: baseline;
+  justify-content: center; /* Score stays centered */
+  gap: 8px;
+}
+
+
+.score-number {
+  font-weight: 800 !important;
+  color: var(--primary-green) !important;
+  font-size: clamp(48px, 15vw, 80px) !important;
+  line-height: 0.9 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.score-separator {
+  color: var(--neutral-400) !important;
+  font-weight: 300 !important;
+  font-size: clamp(36px, 12vw, 60px) !important;
+}
+
+.over-display {
+  color: var(--neutral-600) !important;
+  font-weight: 600 !important;
+  background: var(--neutral-100) !important;
+  padding: 8px 12px !important;
+  border-radius: 12px !important;
+  font-size: clamp(14px, 3.5vw, 16px) !important;
+  white-space: nowrap;
+  position: absolute; /* Position absolutely to not affect centering */
+  right: 0; /* Align to right edge */
+  top: 50%;
+  transform: translateY(-50%); /* Center vertically */
+}
+
+/* Modern batsmen cards */
+.batsmen-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.batsman-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+  border: 1px solid var(--neutral-200);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.batsman-card.striker::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent-orange);
+}
+
+.batsman-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 8px 12px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.batsman-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.batsman-name {
+  font-weight: 700;
+  color: var(--neutral-800);
+  font-size: 14px;
+  cursor: pointer;
+  border-bottom: 1px dashed var(--primary-green);
+}
+
+.batsman-name:hover {
+  color: var(--primary-green);
+}
+
+.batsman-stats {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+/* Modern action buttons */
+.action-buttons-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.wicket-retire-group {
+  display: flex;
+  gap: 4px;
+}
+
+.modern-btn {
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  border: none !important;
+  height: 56px !important;
+  font-size: 16px !important;
+}
+
+.modern-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.modern-btn:hover::before {
+  left: 100%;
+}
+
+.modern-btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-run {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%) !important;
+  color: white !important;
+  box-shadow: 
+    0 4px 6px -1px rgba(16, 185, 129, 0.3),
+    0 2px 4px -2px rgba(16, 185, 129, 0.3);
+}
+
+.btn-run:hover {
+  box-shadow: 
+    0 8px 12px -3px rgba(16, 185, 129, 0.4),
+    0 4px 6px -2px rgba(16, 185, 129, 0.4);
+}
+
+.btn-boundary {
+  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-orange-dark) 100%) !important;
+  color: white !important;
+  box-shadow: 
+    0 4px 6px -1px rgba(245, 158, 11, 0.3),
+    0 2px 4px -2px rgba(245, 158, 11, 0.3);
+}
+
+.btn-boundary:hover {
+  box-shadow: 
+    0 8px 12px -3px rgba(245, 158, 11, 0.4),
+    0 4px 6px -2px rgba(245, 158, 11, 0.4);
+}
+
+.btn-action {
+  background: linear-gradient(135deg, var(--info-blue) 0%, #2563eb 100%) !important;
+  color: white !important;
+  box-shadow: 
+    0 4px 6px -1px rgba(59, 130, 246, 0.3),
+    0 2px 4px -2px rgba(59, 130, 246, 0.3);
+}
+
+.btn-action:hover {
+  box-shadow: 
+    0 8px 12px -3px rgba(59, 130, 246, 0.4),
+    0 4px 6px -2px rgba(59, 130, 246, 0.4);
+}
+
+.btn-wicket {
+  background: linear-gradient(135deg, var(--danger-red) 0%, var(--danger-red-dark) 100%) !important;
+  color: white !important;
+  box-shadow: 
+    0 4px 6px -1px rgba(239, 68, 68, 0.3),
+    0 2px 4px -2px rgba(239, 68, 68, 0.3);
+  flex: 1;
+}
+
+.btn-wicket:hover {
+  box-shadow: 
+    0 8px 12px -3px rgba(239, 68, 68, 0.4),
+    0 4px 6px -2px rgba(239, 68, 68, 0.4);
+}
+
+.btn-retire {
+  background: var(--neutral-600) !important;
+  color: white !important;
+  box-shadow:
+    0 2px 4px -1px rgba(0, 0, 0, 0.1),
+    0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 56px; /* Add explicit height to match other buttons */
+  flex: 0 0 auto;
+  display: flex !important; /* Force flex display */
+  align-items: center !important; /* Center vertically */
+  justify-content: center !important; /* Center horizontally */
+  padding: 0 !important; /* Remove any padding */
+}
+
+.retire-icon {
+  width: 56px !important; /* Smaller icon to fit properly */
+  height: 56px !important;
+  object-fit: contain !important; /* Ensure image scales properly */
+}
+
+.btn-retire:hover {
+  background: var(--neutral-700) !important;
+}
+
+/* Modern over balls */
+.modern-over-ball {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  border: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.btn-primary.modern-over-ball {
+  background: var(--primary-green) !important;
+  color: white !important;
+  box-shadow: 
+    0 4px 8px -2px rgba(16, 185, 129, 0.4),
+    0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+  transform: scale(1.1) !important;
+}
+
+.btn-light.modern-over-ball {
+  background: var(--neutral-100) !important;
+  color: var(--neutral-400) !important;
+  border: 2px dashed var(--neutral-300) !important;
+}
+
+/* Keep all your existing functionality CSS but add modern styling */
+/* This preserves all your working layout while adding modern visuals */
+
+.utility-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
+  padding: 0 8px;
+}
+
+.btn-utility {
+  background: linear-gradient(135deg, var(--neutral-100) 0%, var(--neutral-50) 100%) !important;
+  color: var(--primary-green) !important;
+  border: 1px solid var(--primary-green) !important;
+  box-shadow: 
+    0 2px 4px -1px rgba(16, 185, 129, 0.1),
+    0 1px 2px -1px rgba(16, 185, 129, 0.1) !important;
+  flex: 1;
+  max-width: 120px;
+  height: 48px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.btn-utility:hover {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%) !important;
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 6px -1px rgba(16, 185, 129, 0.3),
+    0 2px 4px -2px rgba(16, 185, 129, 0.3) !important;
+}
+
+.match-status {
+  flex: 1;
+  text-align: center;
+  padding: 0 16px;
+}
+
+.match-code-text {
+  font-size: 12px !important;
+  color: var(--neutral-600) !important;
+  font-weight: 600 !important;
+  padding: 8px 12px !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--neutral-200) !important;
+  display: inline-block;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+
+.bowler-section {
+  margin: 16px 0;
+}
+
+.bowler-info-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+  border: 1px solid var(--primary-green-light);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 
+    0 4px 6px -1px rgba(16, 185, 129, 0.1),
+    0 2px 4px -2px rgba(16, 185, 129, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 60px;
+}
+
+.bowler-details {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary-green);
+  font-weight: 600;
+}
+
+.bowler-name {
+  font-weight: 700 !important;
+  color: var(--primary-green) !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+  border-bottom: 1px dashed var(--primary-green) !important;
+  transition: color 0.2s ease !important;
+}
+
+.bowler-name:hover {
+  color: var(--primary-green-dark) !important;
+}
+
+.bowler-icon {
+  height: 1em;
+  width: auto;
+  margin: 0 4px;
+}
+
+.bowler-stats {
+  font-weight: 600;
+  color: var(--primary-green);
+  font-size: 16px;
+}
+
+.swap-btn {
+  background: linear-gradient(135deg, var(--info-blue) 0%, #2563eb 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 8px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  min-width: 80px !important;
+  height: 40px !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 
+    0 2px 4px -1px rgba(59, 130, 246, 0.3),
+    0 1px 2px -1px rgba(59, 130, 246, 0.3) !important;
+}
+
+.swap-btn:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 
+    0 4px 6px -1px rgba(59, 130, 246, 0.4),
+    0 2px 4px -2px rgba(59, 130, 246, 0.4) !important;
+}
+
+.swap-btn:active {
+  transform: translateY(0) !important;
+}
+
+.swap-text {
+  flex: 1;
+  text-align: center;
+}
+
+.swap-icon {
+  height: 16px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+
+/* Over balls container */
+.position-relative {
+  margin: 16px 8px !important;
+  height: 50px !important; /* Fixed height for consistent positioning */
+  position: relative !important;
+}
+
+/* Progress bar styling */
+.progress {
+  background: var(--neutral-200) !important;
+  border-radius: 2px !important;
+  height: 2px !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 0 !important;
+  right: 0 !important;
+  transform: translateY(-50%) !important;
+}
+
+.progress-bar {
+  background: var(--primary-green) !important;
+  border-radius: 2px !important;
+}
+
+/* Modern over balls - consistent positioning */
+.modern-over-ball {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  border: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: absolute !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important; /* Center both horizontally and vertically */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 2 !important; /* Above progress bar */
+}
+
+/* Current/Played ball - green with glow */
+.btn-primary.modern-over-ball {
+  background: var(--primary-green) !important;
+  color: white !important;
+  box-shadow: 
+    0 4px 8px -2px rgba(16, 185, 129, 0.4),
+    0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+  transform: translate(-50%, -50%) scale(1.1) !important; /* Keep centered while scaling */
+}
+
+/* Pending/Unplayed balls - dashed */
+.btn-light.modern-over-ball {
+  background: var(--neutral-100) !important;
+  color: var(--neutral-400) !important;
+  border: 2px dashed var(--neutral-300) !important;
+  transform: translate(-50%, -50%) !important; /* Same transform as others */
+}
+
+/* Specific positioning for each ball */
+#ball_no_1, #ball_no_4 {
+  left: 5% !important;
+}
+
+#ball_no_2, #ball_no_5 {
+  left: 50% !important;
+}
+
+#ball_no_3, #ball_no_6 {
+  left: 95% !important;
+}
+
   /* Responsive adjustments */
   @media only screen and (orientation: landscape) {
 	/* For desktops: */
@@ -255,117 +580,4 @@
 	vertical-align: middle;
   }
 
-
-  /* Improved styling for the runboard/over balls */
-.over-ball-style {
-	width: 2.5rem;
-	height: 2.5rem;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-	font-weight: bold;
-	font-size: 1rem;
-  }
   
-  /* Active ball (current) - the one with btn-primary class */
-  .btn-primary.over-ball-style {
-	background-color: var(--primary-color, #1e7e34);
-	border: 2px solid #0d6124;
-	transform: scale(1.1);
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* Inactive balls (not yet bowled) - the ones with btn-light class */
-  .btn-light.over-ball-style {
-	background-color: #f0f7ff;
-	border: 2px dashed #b8d0e8;
-	color: #495057;
-  }
-  
-  /* Progress bar improvements */
-  .progress {
-	height: 2px !important;
-	background-color: #e2e8f0;
-  }
-  
-  .progress-bar {
-	background-color: var(--primary-color, #1e7e34);
-  }
-  
-  /* Position adjustments for better visibility */
-  .position-relative {
-	margin-bottom: 2rem !important;
-  }
-
-  .batsman-card {
-	margin-top: 0px;
-	background-color: rgb(245, 255, 170);
-	border-radius: 5px;
-	box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-  }
-  
-  .bowler-card {
-	margin-top: 0px;
-	background-color: rgb(15, 216, 219);
-	border-radius: 5px;
-	box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-  }
-  
-  .editable-name {
-	cursor: pointer;
-	border-bottom: 1px dashed #5028ff;
-  }
-  
-  .editable-name:hover {
-	color: #1e7e34;
-  }
-
-  .bat-icon {
-	height: 1em;  /* Same height as the font */
-	width: auto;  /* Maintain aspect ratio */
-	vertical-align: baseline;  /* Align with text */
-	margin-left: 2px;  /* Small space after name */
-	margin-right: 2px;  /* Small space before runs */
-  }
-
-  .retire-icon {
-	height: 3rem;
-	width: auto;  /* Maintain aspect ratio */
-	padding: 0;
-  }
-
-  #playerScorecard {
-	box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-	border: none;
-	border-radius: 8px;
-	overflow: hidden;
-  }
-  
-  #playerScorecard .table {
-	margin-bottom: 0;
-  }
-  
-  #playerScorecard th {
-	font-weight: 600;
-	font-size: 0.9rem;
-  }
-  
-  #playerScorecard td {
-	font-size: 0.9rem;
-	vertical-align: middle;
-  }
-  
-  .batsman-status {
-	font-weight: bold;
-	font-size: 0.8rem;
-  }
-  
-  .not-out {
-	color: #38a169;
-  }
-  
-  .out {
-	color: #e53e3e;
-  }
-
-  .scorecard-header th{ 
-	color: black !important;
-  }

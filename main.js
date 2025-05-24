@@ -145,6 +145,7 @@ async function play_ball(run, score = 1) {
 			   newBowlerName
 			 ];
 			swapBatsmen();
+			updateOverBalls();
 		}
 	}
 	update_score();
@@ -179,6 +180,12 @@ function recordDelivery(run, strikerIdx) {
 
 function update_runboard() {
   // Updates the runboard when the function is called
+  updateOverBalls();
+  updateOverDisplay();
+}
+
+function updateOverBalls() {
+  // Update the content of each ball
   for (i = 1; i < 7; i++) {
     let score_und = (_score_und) => (_score_und == undefined ? "" : _score_und);
     updateHtml(
@@ -186,6 +193,8 @@ function update_runboard() {
       score_und(scoreboard[over_no][0][i])
     );
   }
+  
+  // Update the styling (current ball vs others)
   if (ball_no != 1) {
     $("#ball_no_" + ball_no.toString()).removeClass("btn-light");
     $("#ball_no_" + ball_no.toString()).addClass("btn-primary");
@@ -195,11 +204,16 @@ function update_runboard() {
       $("#ball_no_" + i.toString()).addClass("btn-light");
     }
   }
+}
+
+function updateOverDisplay() {
+  // Update the over count display (e.g., "18.4 overs")
+  const displayOver = (ball_no == 6 ? over_no : over_no - 1).toString();
+  const displayBall = (ball_no == 6 ? 0 : ball_no).toString();
+  
   updateHtml(
     "#over-ball",
-    (ball_no == 6 ? over_no : over_no - 1).toString() +
-      "." +
-      (ball_no == 6 ? 0 : ball_no).toString()
+    displayOver + "." + displayBall
   );
 }
 

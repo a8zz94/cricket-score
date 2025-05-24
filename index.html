@@ -29,32 +29,39 @@
 
     <!-- This is the scores on the topmost part of the screen -->
     <div class="col-left-custom scoreboard-display">
-      <h6 style="text-align:center;">
-        <!-- <span style="vertical-align:0.7em; font-size: small;">Score: </span> -->
-        <span contentEditable="false" id="run" style="font-size:20vw; line-height: 80%;">0</span>
-        <span contentEditable="false" style="font-size:15vw; line-height: 80%;">/</span>
-        <span contentEditable="false" id="wickets" style="font-size:20vw; line-height: 80%;">0</span>
-        <span id="over-ball" style="font-size: 10vw; line-height: 200%">0</span>
-        <center><h6 style="color: red; display: none;" id="no-ball-warning">No ball: Tap the runs scored in no ball.</h6></center>
-      </h6>
-      <div class="batsmen-display mt-3 mb-3">
-        <div class="row">
-          <div class="col-6 p-0">
-            <div class="batsman-card p-2">
-              <span id="striker-name" class="editable-name" onclick="editPlayerName(striker)">Player 1</span>
-              <img src="/icons/cricket-bat.png" alt="*" class="bat-icon">
-              <span id="striker-runs">0</span> (<span id="striker-balls">0</span>)
-            </div>
-          </div>
-          <div class="col-6 p-0">
-            <div class="batsman-card p-2">
-              <span id="nonstriker-name" class="editable-name" onclick="editPlayerName(nonStriker)">Player 2</span>
-              <span id="nonstriker-runs">0</span> (<span id="nonstriker-balls">0</span>)
-            </div>
-          </div>
+      <div class="score-line">
+        <div class="score-container">
+          <span contentEditable="false" id="run" class="score-number">0</span>
+          <span contentEditable="false" class="score-separator">/</span>
+          <span contentEditable="false" id="wickets" class="score-number">0</span>
+        </div>
+        <span id="over-ball" class="over-display">0.0</span>
+      </div>
+      <center><h6 style="color: red; display: none;" id="no-ball-warning">No ball: Tap the runs scored in no ball.</h6></center>
+    </div>
+
+  <div class="batsmen-display mt-3 mb-3">
+    <div class="batsmen-grid">
+      <div class="batsman-card striker">
+        <div class="batsman-info">
+          <span id="striker-name" class="batsman-name" onclick="editPlayerName(striker)">Player 1</span>
+          <img src="/icons/cricket-bat.png" alt="*" class="bat-icon">
+        </div>
+        <div class="batsman-stats">
+          <span id="striker-runs">0</span> (<span id="striker-balls">0</span>)
+        </div>
+      </div>
+      <div class="batsman-card">
+        <div class="batsman-info">
+          <span id="nonstriker-name" class="batsman-name" onclick="editPlayerName(nonStriker)">Player 2</span>
+        </div>
+        <div class="batsman-stats">
+          <span id="nonstriker-runs">0</span> (<span id="nonstriker-balls">0</span>)
         </div>
       </div>
     </div>
+  </div>
+
     
     <!-- END: This is the scores on the topmost part of the screen -->
     <!-- These are the action buttons and runboard -->
@@ -64,13 +71,13 @@
           <div class="progress-bar" role="progressbar" style="width: 0%;"></div>
         </div>
         <button type="button"
-          class="position-absolute top-0 start-0 translate-middle btn btn-sm btn-primary rounded-pill over-ball-style"
+          class="position-absolute top-0 start-0 translate-middle btn btn-sm btn-primary rounded-pill over-ball-style over-ball modern-over-ball"
           id="ball_no_1"></button>
         <button type="button"
-          class="position-absolute top-0 start-50 translate-middle btn btn-sm btn-light rounded-pill over-ball-style"
+          class="position-absolute top-0 start-50 translate-middle btn btn-sm btn-light rounded-pill over-ball-style over-ball modern-over-ball"
           id="ball_no_2"></button>
         <button type="button"
-          class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-light rounded-pill over-ball-style"
+          class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-light rounded-pill over-ball-style over-ball modern-over-ball"
           id="ball_no_3"></button>
       </div>
       <div class="position-relative m-4 my-5">
@@ -78,16 +85,16 @@
           <div class="progress-bar" role="progressbar" style="width: 0%;"></div>
         </div>
         <button type="button"
-          class="position-absolute top-0 start-0 translate-middle btn btn-sm btn-light rounded-pill over-ball-style"
+          class="position-absolute top-0 start-0 translate-middle btn btn-sm btn-light rounded-pill over-ball-style over-ball modern-over-ball"
           id="ball_no_4"></button>
         <button type="button"
-          class="position-absolute top-0 start-50 translate-middle btn btn-sm btn-light rounded-pill over-ball-style"
+          class="position-absolute top-0 start-50 translate-middle btn btn-sm btn-light rounded-pill over-ball-style over-ball modern-over-ball"
           id="ball_no_5"></button>
         <button type="button"
-          class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-light rounded-pill over-ball-style"
+          class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-light rounded-pill over-ball-style over-ball modern-over-ball"
           id="ball_no_6"></button>
       </div>
-
+    
       <div class="alert alert-primary text-center target-display" role="alert" id="targetBoard"
         style="display: none; transition: height 1400ms;">
         <span id="targetBody">Require
@@ -98,73 +105,58 @@
         </span>
         &nbsp;&nbsp;<button type="button" class="btn-close" onClick="setTarget(false)"></button>
       </div>
-
-
-      <div class="row no-gutters ms-1 me-1">
-        <div class="col-4 my-auto zoom mb-2 px-1 run-btn">
-          <button class="btn btn-outline-primary btn-lg btn-custom btn-custom-lg btn-action" id="run_dot">Dot</button>
+    
+      <div class="action-buttons-grid">
+        <div class="action-row">
+          <button class="btn btn-action modern-btn" id="run_dot">Dot</button>
+          <button class="btn btn-action modern-btn" id="run_wide">Wide</button>
+          <button class="btn btn-action modern-btn" id="run_no_ball">No ball</button>
         </div>
-        <div class="col-4 my-auto zoom mb-2 px-1 run-btn">
-          <button class="btn btn-outline-primary btn-lg btn-custom btn-custom-lg btn-action" id="run_wide">Wide</button>
+    
+        <div class="action-row">
+          <button class="btn btn-run modern-btn" id="run_1">1</button>
+          <button class="btn btn-run modern-btn" id="run_2">2</button>
+          <button class="btn btn-run modern-btn" id="run_3">3</button>
         </div>
-
-        <div class="col-4 my-auto zoom mb-2 px-1 run-btn">
-          <button class="btn btn-outline-primary btn-lg btn-custom btn-custom-lg btn-action" id="run_no_ball">No ball</button>
-        </div>
-
-        <div class="col-4 my-auto zoom mb-2 px-1 run-btn">
-          <button class="btn btn-outline-primary btn-lg btn-custom btn-custom-lg btn-run" id="run_1">1</button>
-        </div>
-        <div class="col-4 my-auto zoom mb-2 px-1 run-btn">
-          <button class="btn btn-outline-primary btn-lg btn-custom btn-custom-lg btn-run" id="run_2">2</button>
-        </div>
-        <div class="col-4 my-auto zoom mb-2 px-1 run-btn">
-          <button class="btn btn-outline-primary btn-lg btn-custom btn-custom-lg btn-run" id="run_3">3</button>
-        </div>
-        <div class="col-4 my-auto zoom pb-1 px-1 run-btn">
-          <button class="btn btn-outline-primary btn-custom btn-custom-sm btn-run" id="run_4">4</button>
-        </div>
-        <div class="col-4 my-auto zoom pb-1 px-1 run-btn">
-          <button class="btn btn-outline-primary btn-custom btn-custom-sm btn-run" id="run_6">6</button>
-        </div>
-        <div class="col-4 my-auto zoom pb-1 px-1 run-btn d-flex">
-          <button class="btn btn-outline-primary btn-custom btn-custom-sm btn-wicket flex-grow-1 me-1" id="run_W">Wicket</button>
-          <button class="btn btn-outline-primary btn-custom btn-custom-sm btn-retire flex-grow-0 p-0" id="run_RO" style="flex-basis: 20%; min-width: 0;">
-                <img src="/icons/retire_text_w.png" alt="R" class="retire-icon">
-          </button>
-        </div>
-
-        <div class="bowler-display mt-0 mb-0">
-          <div class="row">
-            <div class="col-8">
-              <div class="bowler-card p-2">
-                <span id="bowler-name" class="editable-name" onclick="editBowlerName()">Bowler 1</span>
-                <img src="/icons/ball.png" alt="*" class="bat-icon">
-                (<span id="bowler-wickets">0</span>-<span id="bowler-runs">0</span>)
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="btn-action p-2 run-btn">
-                <span id="bowler-name text-small" onclick="swapBatsmen()">Swap</span>
-                <img src="/icons/cricket-bat.png" alt="*" class="bat-icon">
-              </div>
-            </div>
+    
+        <div class="action-row">
+          <button class="btn btn-boundary modern-btn" id="run_4">4</button>
+          <button class="btn btn-boundary modern-btn" id="run_6">6</button>
+          <div class="wicket-retire-group">
+            <button class="btn btn-wicket modern-btn" id="run_W">Wicket</button>
+            <button class="btn btn-retire modern-btn" id="run_RO">
+              <img src="/icons/retire_text_w.png" alt="R" class="retire-icon">
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="d-flex justify-content-between">
-        <div class="col-4 my-auto zoom py-4 px-1 run-btn">
-          <button type="button" class="btn btn-info btn-custom btn-custom-sm" data-toggle="modal" data-target="#myModal"
-            id="scoreboard-btn">Scoreboard</button>
+    <div class="bowler-section">
+      <div class="bowler-info-card">
+        <div class="bowler-details">
+          <span id="bowler-name" class="bowler-name editable-name" onclick="editBowlerName()">Bowler 1</span>
+          <img src="/icons/ball.png" alt="*" class="bowler-icon">
+          <span class="bowler-stats">
+            (<span id="bowler-wickets">0</span>-<span id="bowler-runs">0</span>)
+          </span>
         </div>
-        <div class="col-3 text-center  my-auto zoom py-4 px-1">
-          <small id="match-code-display" class="text-muted"></small>
+        <button class="swap-btn modern-btn" onclick="swapBatsmen()">
+          <span class="swap-text">Swap</span>
+          <img src="/icons/cricket-bat.png" alt="*" class="swap-icon">
+        </button>
+      </div>
+    </div>
+
+      <div class="utility-section">
+        <button type="button" class="btn btn-utility modern-btn" data-toggle="modal" data-target="#myModal" id="scoreboard-btn">
+          Scoreboard
+        </button>
+        <div class="match-status">
+          <small id="match-code-display" class="match-code-text"></small>
         </div>
-        <div class="col-4 my-auto zoom py-4 px-1 run-btn">
-          <button type="button" class="btn btn-secondary btn-custom btn-custom-sm" data-toggle="modal"
-            data-target="#myModal2">Undo</button>
-        </div>
+        <button type="button" class="btn btn-utility modern-btn" data-toggle="modal" data-target="#myModal2">
+          Undo
+        </button>
       </div>
 
       <div class="d-flex justify-content-between">
