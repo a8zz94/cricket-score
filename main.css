@@ -33,8 +33,8 @@ html, body, .container {
 .scoreboard-display {
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 20px;
-  padding: 16px; /* Reduced padding since it's more compact */
-  margin-bottom: 16px;
+  padding: 16px 16px 0px 16px;
+  margin-bottom: 8px;
   text-align: center;
   box-shadow: 
     0 10px 25px -5px rgba(0, 0, 0, 0.1),
@@ -111,7 +111,7 @@ html, body, .container {
   background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
   border: 1px solid var(--neutral-200);
   border-radius: 16px;
-  padding: 16px;
+  padding: 8px 16px 8px 16px;
   box-shadow: 
     0 4px 6px -1px rgba(0, 0, 0, 0.05),
     0 2px 4px -2px rgba(0, 0, 0, 0.05);
@@ -169,7 +169,7 @@ html, body, .container {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin: 16px 0;
+  margin: 8px 0;
 }
 
 .action-row {
@@ -331,7 +331,7 @@ html, body, .container {
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  margin: 20px 0;
+  margin: 8px 0;
   padding: 0 8px;
 }
 
@@ -379,7 +379,7 @@ html, body, .container {
 }
 
 .bowler-section {
-  margin: 16px 0;
+  margin: 8px 0;
 }
 
 .bowler-info-card {
@@ -478,7 +478,7 @@ html, body, .container {
 
 /* Over balls container */
 .position-relative {
-  margin: 16px 8px !important;
+  margin: 8px 8px !important;
   height: 50px !important; /* Fixed height for consistent positioning */
   position: relative !important;
 }
@@ -580,4 +580,38 @@ html, body, .container {
 	vertical-align: middle;
   }
 
-  
+/* Footer actions */
+  .footer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 8x 0 8px;
+  padding: 0 8px;
+}
+
+.footer-btn {
+  background: none !important;
+  border: none !important;
+  color: var(--primary-green) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  text-transform: capitalize !important;
+  cursor: pointer !important;
+  flex: 1;
+  text-align: center;
+  min-height: 36px;
+}
+
+.footer-btn:hover {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: var(--primary-green-dark) !important;
+  transform: translateY(-1px) !important;
+}
+
+.footer-btn:active {
+  transform: translateY(0) !important;
+}
