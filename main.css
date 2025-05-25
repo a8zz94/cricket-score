@@ -330,7 +330,7 @@ html, body, .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
   margin: 8px 0;
   padding: 0 8px;
 }
@@ -343,7 +343,7 @@ html, body, .container {
     0 2px 4px -1px rgba(16, 185, 129, 0.1),
     0 1px 2px -1px rgba(16, 185, 129, 0.1) !important;
   flex: 1;
-  max-width: 140px;
+  max-width: 150px;
   height: 48px !important;
   font-size: 14px !important;
   font-weight: 600 !important;
@@ -361,7 +361,7 @@ html, body, .container {
 .match-status {
   flex: 1;
   text-align: center;
-  padding: 0 16px;
+  padding: 0 8px;
 }
 
 .match-code-text {
