@@ -619,3 +619,333 @@ html, body, .container {
 .editable-player {
   border-bottom: 1px dashed var(--primary-green);
 }
+
+
+/* Cricket Broadcast Scorecard Styles - Exact match to TV graphics */
+
+/* Modal styling for scorecards */
+#myModal .modal-dialog {
+  max-width: 800px;
+}
+
+#myModal .modal-content {
+  border-radius: 0;
+  border: none;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  background: transparent;
+}
+
+#myModal .modal-header {
+  display: none; /* Hide default header */
+}
+
+#myModal .modal-body {
+  padding: 0;
+  background: transparent;
+}
+
+#myModal .modal-footer {
+  background: #1a365d;
+  border: none;
+  padding: 16px 24px;
+}
+
+#myModal .modal-footer .btn-default {
+  background: #2d3748;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Main scorecard container - TV broadcast style */
+.scorecard-broadcast {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #2563eb  50%, #3b82f6 75%, #60a5fa 100%);
+  color: white;
+  font-family: 'Arial', sans-serif;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Decorative elements like in broadcast */
+.scorecard-broadcast::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 100%;
+  background: linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 70%, transparent 100%);
+  transform: skewX(-15deg);
+  z-index: 1;
+}
+
+.scorecard-broadcast::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  z-index: 2;
+}
+
+/* Unified header for entire scorecard */
+.scorecard-main-header {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 16px 24px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 3;
+}
+
+.scorecard-main-header h3 {
+  margin: 0;
+  font-weight: 800;
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Section headers within scorecard */
+.scorecard-section-header {
+  background: rgba(0, 0, 0, 0.15);
+  padding: 12px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  z-index: 3;
+}
+
+.scorecard-section-header h5 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Table styling to match broadcast graphics */
+.broadcast-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+  margin: 0;
+  position: relative;
+  z-index: 3;
+}
+
+.broadcast-table thead {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.broadcast-table thead th {
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.9);
+  border: none;
+  text-align: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.broadcast-table thead th:first-child {
+  text-align: left;
+  padding-left: 24px;
+}
+
+.broadcast-table thead th:last-child {
+  border-right: none;
+}
+
+.broadcast-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.broadcast-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.broadcast-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.broadcast-table tbody td {
+  padding: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  color: white;
+  border: none;
+  text-align: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.broadcast-table tbody td:first-child {
+  text-align: left;
+  padding-left: 24px;
+  font-weight: 700;
+}
+
+.broadcast-table tbody td:last-child {
+  border-right: none;
+}
+
+/* Special row styling for broadcast look */
+.broadcast-extras-row {
+  background: rgba(0, 0, 0, 0.15) !important;
+}
+
+.broadcast-extras-row td {
+  font-weight: 600 !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-style: italic;
+}
+
+.broadcast-total-row {
+  background: rgba(0, 0, 0, 0.25) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.broadcast-total-row td {
+  font-weight: 800 !important;
+  color: white !important;
+  font-size: 15px !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Player status indicators */
+.broadcast-player-name {
+  color: white;
+  cursor: pointer;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.5);
+  transition: all 0.2s ease;
+}
+
+.broadcast-player-name:hover {
+  color: #fbbf24;
+  border-bottom-color: #fbbf24;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+.broadcast-bat-icon, 
+.broadcast-status-icon {
+  height: 14px;
+  width: auto;
+  margin-left: 6px;
+  vertical-align: middle;
+  filter: brightness(0) invert(1);
+}
+
+.broadcast-status-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  font-size: 11px;
+  margin-left: 6px;
+  text-shadow: none;
+}
+
+/* Score change section styling */
+.broadcast-score-section {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  z-index: 3;
+}
+
+.broadcast-score-section .input-group {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.broadcast-score-section .form-control {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-weight: 500;
+}
+
+.broadcast-score-section .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.broadcast-score-section .form-control:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+  color: white;
+}
+
+.broadcast-score-section .btn-primary {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  border: none;
+  border-radius: 4px;
+  font-weight: 700;
+  padding: 8px 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #1a365d;
+  text-shadow: none;
+}
+
+.broadcast-score-section .btn-primary:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#edited-scores {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  border-left: 4px solid #fbbf24;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .broadcast-table thead th,
+  .broadcast-table tbody td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  
+  .broadcast-table thead th:first-child,
+  .broadcast-table tbody td:first-child {
+    padding-left: 12px;
+  }
+  
+  .scorecard-main-header h3 {
+    font-size: 20px;
+  }
+  
+  .scorecard-section-header h5 {
+    font-size: 14px;
+  }
+  
+  .scorecard-main-header,
+  .scorecard-section-header,
+  .broadcast-score-section {
+    padding: 12px 16px;
+  }
+}

@@ -329,6 +329,8 @@ function editBowlerName() {
   }
 
 // Function to update the player scorecard
+// Updated updateScorecard function - replace the existing one in main.js
+
 function updateScorecard() {
 	let scorecardHtml = '';
 	
@@ -359,15 +361,15 @@ function updateScorecard() {
 		(playerRuns / playerBalls * 100).toFixed(2) : 
 		"0.00";
 	  
-	  // Add player row
+	  // Add player row with broadcast styling
 	  scorecardHtml += `
 		<tr>
 		  <td>
-			<span class="editable-player" onclick="editPlayerName(${i})">${player.name}</span> 
-			${isStriker ? '<img src="/icons/cricket-bat.png" alt="*" class="bat-icon">' : ''}
-			${isOut ? '<img src="/icons/out.png" alt="(out)" class="bat-icon">' : ''}
-			${isRetired ? '<img src="/icons/retired.png" alt="(out)" class="bat-icon">' : ''}
-			${isNonStriker ? '<span class="text-muted">not out</span>' : ''}
+			<span class="broadcast-player-name" onclick="editPlayerName(${i})">${player.name}</span> 
+			${isStriker ? '<img src="/icons/cricket-bat.png" alt="*" class="broadcast-bat-icon">' : ''}
+			${isOut ? '<img src="/icons/out.png" alt="(out)" class="broadcast-status-icon">' : ''}
+			${isRetired ? '<img src="/icons/retired.png" alt="(retired)" class="broadcast-status-icon">' : ''}
+			${isNonStriker && !isOut && !isRetired ? '<span class="broadcast-status-text">not out</span>' : ''}
 		  </td>
 		  <td>${hasNotBatted ? '-' : playerRuns}</td>
 		  <td>${hasNotBatted ? '-' : playerBalls}</td>
@@ -386,15 +388,15 @@ function updateScorecard() {
 	  }
 	}
 	
-	// Add extras and total rows
+	// Add extras and total rows with broadcast styling
 	const extras = runs - totalRuns; // Calculate extras
 	
 	scorecardHtml += `
-	  <tr class="table-light">
+	  <tr class="broadcast-extras-row">
 		<td><strong>Extras</strong></td>
 		<td colspan="5"><strong>${extras}</strong> (Wides, No-balls, etc.)</td>
 	  </tr>
-	  <tr class="table-primary">
+	  <tr class="broadcast-total-row">
 		<td><strong>TOTAL</strong></td>
 		<td><strong>${runs}</strong></td>
 		<td><strong>${totalBalls}</strong></td>
@@ -405,12 +407,12 @@ function updateScorecard() {
 	`;
 	
 	// Update the scorecard table
-	updateHtml("#batting-scorecard",scorecardHtml);
+	updateHtml("#batting-scorecard", scorecardHtml);
 	
 	bowlingScorecard();
-  }
+}
 
-  function bowlingScorecard() {
+function bowlingScorecard() {
 	let scoreboardHtml = '';
 	bowlerScorecard = restructureByBowler(scoreboard)
 	let totalOvers = 0;
@@ -423,15 +425,14 @@ function updateScorecard() {
 		if(currentOver.runs.length <= 6) {
 			economy = totalOvers - 1;
 			economy = economy + (currentOver.runs.length - 1) / 6;
-		}else
-		 {
+		}else {
 			economy = totalOvers;
 		}
 		console.log(currentOver);	
 		maidensAndRunsAndWickets = calculateNumberOfMadiens(bowlerScorecard[bowler]);
 		scoreboardHtml += `
 		  <tr>
-			<td onclick="changeBowlerName('${bowler}')"><span class="editable-player" >${bowler}</span></td>
+			<td onclick="changeBowlerName('${bowler}')"><span class="broadcast-player-name">${bowler}</span></td>
 			<td>${formatOvers(totalOvers, currentOver)}</td>
 			<td>${maidensAndRunsAndWickets[0]}</td>
 			<td>${maidensAndRunsAndWickets[1]}</td>
@@ -442,10 +443,13 @@ function updateScorecard() {
 	}
 
 	updateHtml("#bowling-scorecard", scoreboardHtml);
-  }
+}
 
   function changeBowlerName(bowler) {
 	let newName = prompt("Enter new bowler name:", bowler);
+	if(newName === null || newName.trim() === "") {
+		return;
+	}
 	for (let i = 1; i < scoreboard.length; i++) {
 		if (scoreboard[i][2] === bowler) {
 			scoreboard[i][2] = newName;
