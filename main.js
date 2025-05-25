@@ -442,6 +442,8 @@ function bowlingScorecard() {
 		`;
 	}
 
+	updateHtml("#run-rate", `<span>Run Rate : ${(runs / over_no).toFixed(2)}</span>`);
+
 	updateHtml("#bowling-scorecard", scoreboardHtml);
 }
 
