@@ -1034,3 +1034,17 @@ async function deleteMatch(matchCode) {
     alert('Delete failed - check if backend is running');
   }
 }
+
+function exportModalAsImage() {
+  const modal = document.querySelector('.scorecard-broadcast');
+  
+  html2canvas(modal, {
+    backgroundColor: null, // Transparent background
+    scale: 2 // Higher quality
+  }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'match-scorecard.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+}
