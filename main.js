@@ -428,7 +428,6 @@ function bowlingScorecard() {
 		}else {
 			economy = totalOvers;
 		}
-		console.log(currentOver);	
 		maidensAndRunsAndWickets = calculateNumberOfMadiens(bowlerScorecard[bowler]);
 		scoreboardHtml += `
 		  <tr>
@@ -1005,9 +1004,9 @@ async function deleteMatch(matchCode) {
   
   matchCode = matchCode.toUpperCase().trim();
   
-  if (!confirm(`Are you sure you want to delete match ${matchCode}? This cannot be undone.`)) {
-    return;
-  }
+//   if (!confirm(`Are you sure you want to delete match ${matchCode}? This cannot be undone.`)) {
+//     return;
+//   }
   
   try {
     const response = await fetch(`${API_BASE}/match/${matchCode}`, {
@@ -1017,12 +1016,9 @@ async function deleteMatch(matchCode) {
     const result = await response.json();
     
     if (result.success) {
-      alert(`Match ${matchCode} deleted successfully!`);
-      
       // If we deleted the current match, clear the UI
       if (currentMatchCode === matchCode) {
         currentMatchCode = null;
-        resetGameState();
         updateMatchCodeDisplay();
       }
       
