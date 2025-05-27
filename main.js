@@ -32,6 +32,7 @@ var striker = 0; // Index of striker batsman
 var nonStriker = 1; // Index of non-striker batsman
 var nextBatsman = 2; // Index of next batsman to come in
 var bowlerScorecard = [];
+var allAvailablePlayers = ['Abdullah', 'Al Amin', 'Eousuf', 'Farhan', 'Imran', 'Iqbal', 'Jakaria', 'Lukman', 'Munna', 'Raju', 'Ridwan', 'Tahsin']; // List of all bowlers available in the match
 //#endregion
 
 //#region Application Start
@@ -130,7 +131,7 @@ async function play_ball(run, score = 1) {
 
 			 try {
 			   // Get the bowler name
-			   const selectedBowler = await showBowlerModalAsync();
+			   const selectedBowler = await showPlayerModalAsync('bowler');
 			   newBowlerName = selectedBowler || 'Bowler ' + over_no;
 			 } catch (error) {
 			   console.error("Error selecting bowler:", error);
@@ -239,8 +240,9 @@ function sumScores(scoreArray) {
 }
 
 // Function to edit player name
-function editPlayerName(playerIndex) {
-	const newName = prompt("Enter player name:", players[playerIndex].name);
+async function editPlayerName(playerIndex) {
+	const newName = await showPlayerModalAsync('batsman');
+	// const newName = prompt("Enter player name:", players[playerIndex].name);
 	if (newName !== null && newName.trim() !== "") {
 	  players[playerIndex].name = newName.trim();
 	  updateBatsmenDisplay();
@@ -248,8 +250,8 @@ function editPlayerName(playerIndex) {
 	}
   }
 
-function editBowlerName() {
-	const newName = prompt("Enter bowler name:", scoreboard[over_no][2]);
+async function editBowlerName() {
+	const newName = await showPlayerModalAsync('bowler');
 	if (newName !== null && newName.trim() !== "") {
 	  scoreboard[over_no][2] = newName.trim();
 	  updateBowlerDisplay();
@@ -446,8 +448,8 @@ function bowlingScorecard() {
 	updateHtml("#bowling-scorecard", scoreboardHtml);
 }
 
-  function changeBowlerName(bowler) {
-	let newName = prompt("Enter new bowler name:", bowler);
+  async function changeBowlerName(bowler) {
+	const newName = await showPlayerModalAsync('bowler');
 	if(newName === null || newName.trim() === "") {
 		return;
 	}
@@ -517,6 +519,108 @@ function bowlingScorecard() {
   }
 
 //#endregion  
+
+//#region UI Modification
+
+//show Player Selector Modal 
+
+function showPlayerModalAsync(playeName = 'player') {
+  return new Promise((resolve) => {
+    // Build the modal content
+    let modalContent = `
+      <div class="modal-body">
+        <h5>Select a ${playeName}</h5>
+        <div class="list-group mb-3">`;
+    
+    // Get existing bowlers
+
+	modalContent += `<div class="d-flex flex-wrap gap-1 mb-2">`;
+	allAvailablePlayers.forEach(function(player, idx) {
+		// Generate a color based on the index (cycling through a palette)
+		const colors = [
+			'#0d6efd', // blue
+			'#198754', // green
+			'#dc3545', // red
+			'#fd7e14', // orange
+			'#6f42c1', // purple
+			'#20c997', // teal
+			'#ffc107', // yellow
+			'#6610f2', // indigo
+			'#0dcaf0', // cyan
+			'#6c757d', // gray
+			'#f8f9fa', // light
+			'#343a40'  // dark
+		];
+		const color = colors[idx % colors.length];
+		const textColor = (idx % colors.length === 6 || idx % colors.length === 10) ? '#212529' : '#fff'; // dark text for yellow/light
+		modalContent += `<button type="button" class="list-group-item list-group-item-action flex-fill text-center 
+		p-2 m-0" style="background-color:${color};color:${textColor};width:auto;min-width:unset;max-width:100%;" onclick="selectPlayer('${player}')">${player}</button>`;
+	});
+	modalContent += `</div>`;
+    // Add input for new bowler
+    modalContent += `
+        </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" id="new-player-input" placeholder="Create a new player">
+          <button class="btn btn-primary" type="button" onclick="selectNewPlayer()">Select</button>
+        </div>
+      </div>
+    `;
+    
+    // Set the modal content
+    $("#changePlayerContainer").html(modalContent);
+    
+    // Define global functions to handle selections
+    window.selectedPlayerName = null;
+    window.playerModalResolved = false;
+    
+    window.selectPlayer = function(name) {
+      window.selectedPlayerName = name;
+      window.playerModalResolved = true;
+      $("#changePlayerModal").modal('hide');
+    };
+    
+    window.selectNewPlayer = function() {
+      const newName = $("#new-player-input").val().trim();
+      if (newName) {
+        window.selectedPlayerName = newName;
+        window.playerModalResolved = true;
+		allAvailablePlayers.push(newName); // Add new player to the list
+        $("#changePlayerModal").modal('hide');
+      }
+    };
+    
+    // Set up input field to respond to Enter key
+    document.getElementById("new-player-input").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        window.selectNewPlayer();
+      }
+    });
+    
+    // Show the modal
+    $("#changePlayerModal").modal('show');
+    
+    // Handle modal hidden event - this fires no matter how the modal is closed
+    $("#changePlayerModal").on('hidden.bs.modal', function () {
+      // Always resolve the promise, regardless of how modal was closed
+      if (window.playerModalResolved && window.selectedPlayerName) {
+        resolve(window.selectedPlayerName);
+      } else {
+        // Default if modal was closed without selection (X button, escape, clicking outside, etc.)
+        resolve("Player " + allAvailablePlayers.length);
+      }
+      
+      // Clean up global functions and variables
+      window.selectPlayer = undefined;
+      window.selectNewPlayer = undefined;
+      window.selectedPlayerName = undefined;
+      window.playerModalResolved = undefined;
+      
+      // Remove the event handler to prevent memory leaks
+      $("#changePlayerModal").off('hidden.bs.modal');
+    });
+  });
+}
 
 //#region UI Modification
 function showBowlerModalAsync() {
