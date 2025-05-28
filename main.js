@@ -280,7 +280,6 @@ async function editBowlerName() {
     }
   }
 
-
 // Function to bring in new batsman (after wicket)
 function newBatsman() {
 	// Find retired players
@@ -352,6 +351,7 @@ function newBatsman() {
 								allAvailablePlayers.push(name);
 							}
 						}
+						$('#retiredPlayersModal').modal('hide');
 					})()
 				">Select</button>
 			</div>
@@ -371,6 +371,7 @@ function newBatsman() {
 							allAvailablePlayers.push(name);
 						}
 					}
+					$('#retiredPlayersModal').modal('hide');
 				}
 			});
 		}
@@ -384,6 +385,34 @@ function newBatsman() {
 
 	// Add to modal and show
 	$("#retiredPlayersList").html(modalHtml);
+
+	// When modal is dismissed without any selection, bring in next batsman
+	// Track if a selection was made
+	let selectionMade = false;
+
+	// Wrap the selection functions to set the flag
+	const originalSelectAvailableBatsman = window.selectAvailableBatsman;
+	window.selectAvailableBatsman = function(name) {
+		selectionMade = true;
+		originalSelectAvailableBatsman(name);
+	};
+	const originalSelectRetiredPlayer = window.selectRetiredPlayer;
+	window.selectRetiredPlayer = function(playerIndex) {
+		selectionMade = true;
+		originalSelectRetiredPlayer(playerIndex);
+	};
+
+	$("#retiredPlayersModal").off('hidden.bs.modal').on('hidden.bs.modal', function () {
+		// Only bring in next batsman if no selection was made
+		if (!selectionMade) {
+			setNextBatsman();
+			updateBatsmenDisplay();
+			updateScorecard();
+		}
+		// Clean up
+		window.selectAvailableBatsman = originalSelectAvailableBatsman;
+		window.selectRetiredPlayer = originalSelectRetiredPlayer;
+	});
 	$("#retiredPlayersModal").modal("show");
 }
 
