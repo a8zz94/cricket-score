@@ -535,7 +535,11 @@ function showPlayerModalAsync(playeName = 'player') {
     // Get existing bowlers
 
 	modalContent += `<div class="d-flex flex-wrap gap-1 mb-2">`;
-	allAvailablePlayers.forEach(function(player, idx) {
+	// Filter out names already used in players (by name, case-insensitive)
+	const usedNames = new Set(players.map(p => p.name.trim().toLowerCase()));
+	allAvailablePlayers
+		.filter(player => !usedNames.has(player.trim().toLowerCase()))
+		.forEach(function(player, idx) {
 		// Generate a color based on the index (cycling through a palette)
 		const colors = [
 			'#0d6efd', // blue
