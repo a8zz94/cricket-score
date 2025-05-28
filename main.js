@@ -1092,7 +1092,7 @@ async function saveMatchState() {
     scoreboard, players, allDeliveries, 
     ball_no, over_no, runs, striker, nonStriker, nextBatsman,
     isNoBall, isTargetMode, targetRuns, targetOvers,
-    bowlerScorecard
+    bowlerScorecard, allAvailablePlayers
   };
   
   try {
@@ -1148,6 +1148,7 @@ async function loadMatchByCode(matchCode = null) {
       targetRuns = data.targetRuns || -1;
       targetOvers = data.targetOvers || -1;
       bowlerScorecard = data.bowlerScorecard || [];
+	  allAvailablePlayers = data.allAvailablePlayers || [];
       
       // Clear any no-ball state
       noBall(false);
