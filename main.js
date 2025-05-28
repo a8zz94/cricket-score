@@ -281,27 +281,127 @@ async function editBowlerName() {
   }
 
 
-  // Function to bring in new batsman (after wicket)
-  function newBatsman() {
-    var allRetired = players.filter((player) =>
-      player.bowlsFaced.includes("RO")
-    );
-    //display modal with retired players
-    if (allRetired.length > 0) {
-      let retiredPlayersHtml = "";
-      allRetired.forEach((player) => {
-        retiredPlayersHtml += `<button type="button" class="list-group-item list-group-item-action"
-				onclick="selectRetiredPlayer(${player.index})">${player.name}</button>`;
-      });
-	  retiredPlayersHtml += `<button type="button" class="list-group-item list-group-item-action"
-	  				onclick="selectNewBatsman()">New Batsman</button>`;
-      $("#retiredPlayersList").html(retiredPlayersHtml);
-      $("#retiredPlayersModal").modal("show");
-    } else {
-      // If no retired players, just bring in the next batsman
-     setNextBatsman();
-    }
-  }
+// Function to bring in new batsman (after wicket)
+function newBatsman() {
+	// Find retired players
+	const retiredPlayers = players.filter((player) =>
+		player.bowlsFaced.includes("RO")
+	);
+
+	// Find available batsmen from allAvailablePlayers who haven't batted yet
+	const battedNames = new Set(players.map((p) => p.name.trim().toLowerCase()));
+	const availableBatsmen = allAvailablePlayers.filter(
+		(name) => !battedNames.has(name.trim().toLowerCase())
+	);
+
+	let modalHtml = "";
+
+	// Section 1: Select a retired player (if any)
+	if (retiredPlayers.length > 0) {
+		modalHtml += `<div class="mb-2"><strong>Select a retired player to return:</strong><div class="d-flex flex-wrap gap-2">`;
+		retiredPlayers.forEach((player) => {
+			modalHtml += `<button type="button" class="list-group-item list-group-item-action flex-fill text-center p-2 m-0"
+				style="background-color:#f8d7da;color:#842029;width:auto;min-width:unset;max-width:100%;white-space:nowrap;"
+				onclick="selectRetiredPlayer(${player.index})">
+				<img src="/icons/retired.png" alt="(retired)" style="height:1em;vertical-align:middle;margin-right:4px;">
+				${player.name}
+			</button>`;
+		});
+		modalHtml += `</div></div>`;
+	}
+
+	// Section 2: Select a new batsman from available players
+	if (availableBatsmen.length > 0) {
+		modalHtml += `<div class="mb-2"><strong>Select a new batsman:</strong><div class="d-flex flex-wrap gap-2">`;
+		const colors = [
+			'#0d6efd', // blue
+			'#198754', // green
+			'#dc3545', // red
+			'#fd7e14', // orange
+			'#6f42c1', // purple
+			'#20c997', // teal
+			'#ffc107', // yellow
+			'#6610f2', // indigo
+			'#0dcaf0', // cyan
+			'#6c757d', // gray
+			'#f8f9fa', // light
+			'#343a40'  // dark
+		];
+		availableBatsmen.forEach((name, idx) => {
+			const color = colors[idx % colors.length];
+			const textColor = (idx % colors.length === 6 || idx % colors.length === 10) ? '#212529' : '#fff';
+			modalHtml += `<button type="button" class="list-group-item list-group-item-action flex-fill text-center p-2 m-0"
+				style="background-color:${color};color:${textColor};width:auto;min-width:unset;max-width:100%;white-space:nowrap;"
+				onclick="selectAvailableBatsman('${name.replace(/'/g, "\\'")}')">${name}</button>`;
+		});
+		modalHtml += `</div></div>`;
+	}
+
+	// Always show input for custom player name
+	modalHtml += `
+		<div class="mb-2">
+			<strong>Or enter a new batsman:</strong>
+			<div class="input-group">
+				<input type="text" class="form-control" id="custom-batsman-input" placeholder="Enter new batsman name">
+				<button class="btn btn-primary" type="button" onclick="
+					(function() {
+						const name = document.getElementById('custom-batsman-input').value.trim();
+						if (name) {
+							selectAvailableBatsman(name);
+							if (!allAvailablePlayers.includes(name)) {
+								allAvailablePlayers.push(name);
+							}
+						}
+					})()
+				">Select</button>
+			</div>
+		</div>
+	`;
+
+	// Optional: allow Enter key to trigger selection
+	setTimeout(() => {
+		const input = document.getElementById('custom-batsman-input');
+		if (input) {
+			input.addEventListener('keypress', function(e) {
+				if (e.key === 'Enter') {
+					const name = input.value.trim();
+					if (name) {
+						selectAvailableBatsman(name);
+						if (!allAvailablePlayers.includes(name)) {
+							allAvailablePlayers.push(name);
+						}
+					}
+				}
+			});
+		}
+	}, 0);
+
+	// Fallback: If no retired or available batsmen, just bring in next batsman
+	if (!modalHtml) {
+		setNextBatsman();
+		return;
+	}
+
+	// Add to modal and show
+	$("#retiredPlayersList").html(modalHtml);
+	$("#retiredPlayersModal").modal("show");
+}
+
+// Handler for selecting a new batsman from available players
+function selectAvailableBatsman(name) {
+	if (!name) return;
+	// Find the next available player slot
+	if (nextBatsman < players.length) {
+		players[nextBatsman].name = name;
+		striker = nextBatsman;
+		nextBatsman++;
+		$("#retiredPlayersModal").modal("hide");
+		updateBatsmenDisplay();
+		updateScorecard();
+	} else {
+		alert("All out!");
+	}
+}
 
   function selectRetiredPlayer(playerIndex) {
 	// Bring back the selected retired player
