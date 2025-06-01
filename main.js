@@ -1196,7 +1196,7 @@ async function listMatches() {
       
       // Build HTML for the matches list
       let matchesHtml = `
-	  	<button class="btn btn-outline-secondary btn-sm" onclick="loadRecentMatches()">
+        <button class="btn btn-outline-secondary btn-sm" onclick="loadRecentMatches()">
                   Show Recent Matches
                 </button>`;
       
@@ -1207,13 +1207,19 @@ async function listMatches() {
           const date = new Date(match.lastUpdated).toLocaleDateString();
           const time = new Date(match.lastUpdated).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
           
+          const starButton = `<button class="btn ${match.isStarred ? 'btn-warning' : 'btn-outline-warning'} btn-sm" onclick="toggleStar('${match.matchCode}')">${match.isStarred ? '★' : '☆'}</button>`;
+          const deleteButton = `<button class="btn btn-outline-danger btn-sm" onclick="deleteMatch('${match.matchCode}')" ${match.isStarred ? 'disabled' : ''}>Delete</button>`;
+          
           matchesHtml += `
             <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
               <button class="btn btn-outline-primary btn-sm col-4" onclick="loadMatchByCode('${match.matchCode}')" data-dismiss="modal">
                 ${match.matchCode}
               </button>
               <small class="text-muted col-4 ms-2">${date} ${time}</small>
-			  <button class="btn btn-outline-danger btn-sm col-4" onclick="deleteMatch('${match.matchCode}')" data-dismiss="modal">Delete</button>
+              <div class="col-4 d-flex gap-1 justify-content-end">
+                ${starButton}
+                ${deleteButton}
+              </div>
             </div>
           `;
         });
@@ -1285,4 +1291,20 @@ function exportModalAsImage() {
     link.href = canvas.toDataURL('image/png');
     link.click();
   });
+}
+
+async function toggleStar(matchCode) {
+  try {
+    const response = await fetch(`${API_BASE}/match/star`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ matchCode })
+    });
+    
+    if (response.ok) {
+      await listMatches(); // Refresh the list
+    }
+  } catch (error) {
+    console.error('Star toggle failed:', error);
+  }
 }
