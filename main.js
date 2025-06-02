@@ -503,7 +503,7 @@ function updateScorecard() {
 			<span class="broadcast-player-name" onclick="editPlayerName(${i})">${player.name}</span> 
 			${isStriker ? '<img src="/icons/cricket-bat.png" alt="*" class="broadcast-bat-icon">' : ''}
 			${isOut ? '<img src="/icons/out.png" alt="(out)" class="broadcast-status-icon">' : ''}
-			${isOut ? `<span>b ${scoreboard[player.outOver][2]} </span>` : ''}
+			${isOut && player.outOver ? `<span>b ${scoreboard[player.outOver][2]} </span>` : ''}
 			${isRetired ? '<img src="/icons/retired.png" alt="(retired)" class="broadcast-status-icon">' : ''}
 			${isNonStriker && !isOut && !isRetired ? '<span class="broadcast-status-text">not out</span>' : ''}
 		  </td>
