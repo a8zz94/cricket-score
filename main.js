@@ -32,7 +32,9 @@ var striker = 0; // Index of striker batsman
 var nonStriker = 1; // Index of non-striker batsman
 var nextBatsman = 2; // Index of next batsman to come in
 var bowlerScorecard = [];
-var allAvailablePlayers = ['Abdullah', 'Al Amin', 'Eousuf', 'Farhan', 'Imran', 'Iqbal', 'Jakaria', 'Lukman', 'Munna', 'Raju', 'Ridwan', 'Tahsin']; // List of all bowlers available in the match
+var allAvailablePlayers = ['Abdullah', 'Al Amin', 'Eousuf', 'Fahim', 'Farhan', 'Hafizur',
+	'Humayun', 'Imran', 'Iqbal', 'Jakaria', 'Lukman', 'Mahbub', 'Munna', 'Mubasshir', 'Rayhan',
+	'Raju', 'Ridwan', 'Shakib', 'Sodrul', 'Tahsin']; // List of all bowlers available in the match
 //#endregion
 
 //#region Application Start
