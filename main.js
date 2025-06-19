@@ -671,29 +671,26 @@ function showPlayerModalAsync(playeName = 'player') {
 	modalContent += `<div class="d-flex flex-wrap gap-1 mb-2">`;
 	// Filter out names already used in players (by name, case-insensitive)
 	const usedNames = new Set(players.map(p => p.name.trim().toLowerCase()));
-	allAvailablePlayers
-		.filter(player => !usedNames.has(player.trim().toLowerCase()))
-		.forEach(function(player, idx) {
-		// Generate a color based on the index (cycling through a palette)
-		const colors = [
-			'#0d6efd', // blue
-			'#198754', // green
-			'#dc3545', // red
-			'#fd7e14', // orange
-			'#6f42c1', // purple
-			'#20c997', // teal
-			'#ffc107', // yellow
-			'#6610f2', // indigo
-			'#0dcaf0', // cyan
-			'#6c757d', // gray
-			'#f8f9fa', // light
-			'#343a40'  // dark
-		];
-		const color = colors[idx % colors.length];
-		const textColor = (idx % colors.length === 6 || idx % colors.length === 10) ? '#212529' : '#fff'; // dark text for yellow/light
-		modalContent += `<button type="button" class="list-group-item list-group-item-action flex-fill text-center 
-		p-2 m-0" style="background-color:${color};color:${textColor};width:auto;min-width:unset;max-width:100%;" onclick="selectPlayer('${player}')">${player}</button>`;
+	const filteredPlayers = allAvailablePlayers
+		.filter(player => !usedNames.has(player.trim().toLowerCase()));
+
+	// Use Bootstrap grid to ensure 2 per row
+	modalContent += `<div class="row g-1 mb-2">`;
+	filteredPlayers.forEach((player, idx) => {
+		// Alternate colors
+		const colors = ['#0d6efd', '#198754'];
+		const textColors = ['#fff', '#fff'];
+		const color = colors[idx % 2];
+		const textColor = textColors[idx % 2];
+		modalContent += `
+			<div class="col-6">
+				<button type="button" class="list-group-item list-group-item-action text-center p-2 m-0 w-100"
+					style="background-color:${color};color:${textColor};white-space:nowrap;"
+					onclick="selectPlayer('${player}')">${player}</button>
+			</div>
+		`;
 	});
+	modalContent += `</div>`;
 	modalContent += `</div>`;
     // Add input for new bowler
     modalContent += `
