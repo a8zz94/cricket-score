@@ -17,26 +17,20 @@ function startConnect(_topic) {
     serializedLink = encodeURI(serializedLink);
     
     // Update share modal content
-    document.getElementById("shareModalBody").innerHTML =
-        "<h4>Share this code:" +
-        '&nbsp;<span class="badge bg-secondary">' +
-        topic +
-        "</span>&nbsp;" +
-        '<button class="btn btn-primary" onclick="navigator.clipboard.writeText(\'' +
-        topic +
-        '\')" data-dismiss="modal">' +
-        '<span class="material-symbols-outlined">content_copy</span>' +
-        "</span></h4>";
-    
-    document.getElementById("shareModalFooter").innerHTML =
-        '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
-        '<button type="button" class="btn btn-default" onclick="navigator.clipboard.writeText(\'' +
-        serializedLink +
-        '\')" data-dismiss="modal">Copy link</button>' +
-        '<a href="whatsapp://send?text=Follow the match score at: ' +
-        serializedLink +
-        '" data-action="share/whatsapp/share" class="btn btn-success">Share via Whatsapp</a>';
-    
+        document.getElementById("shareModalBody").innerHTML =
+            `<div style="display:flex;align-items:center;justify-content:space-between;padding:0.7em 0.5em;background:#f9f9f9;border-radius:8px;">
+                <button style="border:1px solid #e5e7eb;background:#fff;color:#2563eb;border-radius:6px;padding:0.3em 0.8em;cursor:pointer;"
+                    onclick="navigator.clipboard.writeText('${serializedLink}')" title="Copy link">
+                    Copy Link
+                </button>
+                <span style="background:#2563eb;color:#fff;padding:0.3em 0.8em;border-radius:12px;font-weight:500;">${topic}</span>
+                <a href="whatsapp://send?text=Follow the match score at: ${serializedLink}" 
+                data-action="share/whatsapp/share" 
+                title="Share via WhatsApp"
+                style="background:#25d366;border-radius:6px;padding:0.3em;display:flex;align-items:center;justify-content:center;text-decoration:none;">
+                    <img src="/icons/whatsapp.png" alt="WhatsApp" style="width:22px;height:22px;display:block;">
+                </a>
+            </div>`;
     // Log connection info
     if (document.getElementById("messages")) {
         document.getElementById("messages").innerHTML +=
