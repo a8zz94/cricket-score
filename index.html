@@ -156,7 +156,7 @@
         <div class="match-status">
           <small id="match-code-display" class="match-code-text"></small>
         </div>
-        <button type="button" class="btn btn-utility modern-btn" data-toggle="modal" data-target="#myModal2">
+        <button type="button" class="btn btn-utility modern-btn" onclick="back_button()">
           Undo
         </button>
       </div>
@@ -240,28 +240,6 @@
     </div>
   </div>
 </div>
-
-    <!-- Modal 2 -->
-    <div class="modal fade" id="myModal2" role="dialog">
-      <div class="modal-dialog">
-
-        <!-- Modal content-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">Undo last action?</h4>
-            <button type="button" class="btn close" data-dismiss="modal">&times;</button>
-          </div>
-          <div class="modal-body">
-            Extras (Wide and No ball) cannot be undone.
-            <button class="btn btn-danger btn-custom btn-custom-sm" onclick="back_button()"
-              data-dismiss="modal">Undo</button>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- TargetModal: Modal 3: For target mode -->
     <div class="modal fade" id="TargetModal" role="dialog">

@@ -961,6 +961,7 @@ function back_button() {
 	var last = allDeliveries.pop();
   
 	if (last.run == "+") {
+		runs--;
 	  scoreboard[over_no][1] -= 1;
 	} else {
 	  ball_no--;
@@ -974,13 +975,13 @@ function back_button() {
 		nextBatsman--;
 	  } else if (last == "D") {
 		players[striker].bowlsFaced.pop();
-	  } else if (last == 1 || last == 3 || last == 5) {
+	  } else if (last.run == 1 || last.run == 3 || last.run == 5) {
 		players[nonStriker].bowlsFaced.pop();
 		swapBatsmen();
 	  } else {
 		players[striker].bowlsFaced.pop();
 	  }
-	  scoreboard[over_no][0][ball_no] = undefined;
+	  scoreboard[over_no][0].splice(ball_no, 1);
 	}
 	update_score();
 	update_runboard();
