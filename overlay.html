@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Scoreboard Overlay</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Clean, readable scoreboard - no unnecessary height */
+        .cricket-scoreboard {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1400px;
+            height: 120px;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 2px solid #475569;
+            overflow: hidden;
+        }
+
+        /* Batting team section (left) */
+        .batting-team-section {
+            width: 140px;
+            height: 100%;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px 0 0 12px;
+            position: relative;
+        }
+
+        .team-logo {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #16a34a;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .team-label {
+            margin-top: 8px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Main score section - large and prominent */
+        .score-section {
+            width: 280px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .main-score {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .score-runs {
+            font-size: 48px;
+            font-weight: 900;
+            color: #22c55e;
+            text-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+        }
+
+        .score-separator {
+            font-size: 36px;
+            color: #e2e8f0;
+            font-weight: 300;
+        }
+
+        .score-wickets {
+            font-size: 48px;
+            font-weight: 900;
+            color: #e2e8f0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .overs-display {
+            font-size: 16px;
+            color: #94a3b8;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 16px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Batsmen section - clean and readable */
+        .batsmen-section {
+            width: 320px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .batsman-row {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            margin: 2px 0;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .batsman-row.striker {
+            background: rgba(34, 197, 94, 0.15);
+            border-left: 4px solid #22c55e;
+        }
+
+        .batsman-row:not(.striker) {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .batsman-name {
+            font-size: 16px;
+            color: #f1f5f9;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .batsman-name.striker {
+            color: #22c55e;
+        }
+
+        .batsman-stats {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .batsman-runs {
+            color: #f1f5f9;
+            font-weight: 700;
+        }
+
+        .batsman-balls {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        /* Bowler section - prominent and clear */
+        .bowler-section {
+            width: 260px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(239, 68, 68, 0.08);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px;
+        }
+
+        .bowler-name {
+            font-size: 18px;
+            color: #f1f5f9;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            text-align: center;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .bowler-stats {
+            font-size: 14px;
+            color: #ef4444;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .bowler-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        /* Over balls - clean and colorful */
+        .over-section {
+            width: 240px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.02);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px;
+        }
+
+        .over-label {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .balls-container {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: nowrap;
+        }
+
+        .ball {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .ball.dot { 
+            background: #64748b; 
+            color: #ffffff; 
+            box-shadow: 0 2px 4px rgba(100, 116, 139, 0.3);
+        }
+        .ball.run { 
+            background: #22c55e; 
+            color: #ffffff; 
+            box-shadow: 0 2px 4px rgba(34, 197, 94, 0.4);
+        }
+        .ball.four { 
+            background: #3b82f6; 
+            color: #ffffff; 
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.4);
+        }
+        .ball.six { 
+            background: #ef4444; 
+            color: #ffffff; 
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+        }
+        .ball.wide { 
+            background: #f59e0b; 
+            color: #1f2937; 
+            box-shadow: 0 2px 4px rgba(245, 158, 11, 0.4);
+        }
+        .ball.wicket { 
+            background: #8b5cf6; 
+            color: #ffffff; 
+            box-shadow: 0 2px 4px rgba(139, 92, 246, 0.4);
+        }
+        .ball.empty { 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 2px dashed rgba(148, 163, 184, 0.4);
+            color: rgba(148, 163, 184, 0.6);
+        }
+
+        /* Info section - partnership, target etc */
+        .info-section {
+            width: 160px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 16px;
+            gap: 8px;
+        }
+
+        /* Bowling team section (right) */
+        .bowling-team-section {
+            width: 140px;
+            height: 100%;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 12px 12px 0;
+            position: relative;
+        }
+
+        .bowling-team-logo {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #dc2626;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .bowling-team-label {
+            margin-top: 8px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .partnership-info {
+            text-align: center;
+            background: rgba(34, 197, 94, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .partnership-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .partnership-value {
+            font-size: 14px;
+            color: #22c55e;
+            font-weight: 700;
+        }
+
+        .target-info {
+            text-align: center;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            display: none;
+        }
+
+        .target-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .target-value {
+            font-size: 14px;
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        /* Connection status */
+        .connection-status {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ef4444;
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.connected {
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+        }
+
+        /* Responsive scaling for smaller screens */
+        @media (max-width: 1600px) {
+            .cricket-scoreboard {
+                width: 1200px;
+                height: 100px;
+                transform: translateX(-50%) scale(0.9);
+            }
+        }
+
+        @media (max-width: 1400px) {
+            .cricket-scoreboard {
+                width: 1000px;
+                height: 90px;
+                transform: translateX(-50%) scale(0.8);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cricket-scoreboard">
+        <!-- Batting Team Section (Left) -->
+        <div class="batting-team-section">
+            <div class="team-logo">BAT</div>
+            <div class="team-label">Batting</div>
+        </div>
+
+        <!-- Main Score -->
+        <div class="score-section">
+            <div class="main-score">
+                <span class="score-runs" id="run">0</span>
+                <span class="score-separator">/</span>
+                <span class="score-wickets" id="wickets">0</span>
+            </div>
+            <div class="overs-display" id="over-ball">0.0 Overs</div>
+        </div>
+
+        <!-- Current Batsmen -->
+        <div class="batsmen-section">
+            <div class="batsman-row striker">
+                <span class="batsman-name striker" id="striker-name">Player 1</span>
+                <div class="batsman-stats">
+                    <span class="batsman-runs" id="striker-runs">0</span>
+                    <span class="batsman-balls">(<span id="striker-balls">0</span>)</span>
+                </div>
+            </div>
+            <div class="batsman-row">
+                <span class="batsman-name" id="nonstriker-name">Player 2</span>
+                <div class="batsman-stats">
+                    <span class="batsman-runs" id="nonstriker-runs">0</span>
+                    <span class="batsman-balls">(<span id="nonstriker-balls">0</span>)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Bowler -->
+        <div class="bowler-section">
+            <div class="bowler-label">Current Bowler</div>
+            <span class="bowler-name" id="bowler-name">Bowler 1</span>
+            <span class="bowler-stats">
+                <span id="bowler-wickets">0</span>-<span id="bowler-runs">0</span>
+            </span>
+        </div>
+
+        <!-- This Over -->
+        <div class="over-section">
+            <div class="over-label">This Over</div>
+            <div class="balls-container">
+                <div class="ball empty" id="ball_no_1"></div>
+                <div class="ball empty" id="ball_no_2"></div>
+                <div class="ball empty" id="ball_no_3"></div>
+                <div class="ball empty" id="ball_no_4"></div>
+                <div class="ball empty" id="ball_no_5"></div>
+                <div class="ball empty" id="ball_no_6"></div>
+            </div>
+        </div>
+
+        <!-- Partnership & Target Info -->
+        <div class="info-section">
+            <div class="partnership-info">
+                <div class="partnership-label">Partnership</div>
+                <div class="partnership-value" id="partnership">0 (0)</div>
+            </div>
+            
+            <div class="target-info" id="targetSection">
+                <div class="target-label">Required</div>
+                <div class="target-value" id="targetInfo">0 from 0</div>
+            </div>
+        </div>
+
+        <!-- Bowling Team Section (Right) -->
+        <div class="bowling-team-section">
+            <div class="bowling-team-logo">BOWL</div>
+            <div class="bowling-team-label">Bowling</div>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="connection-status" id="connectionStatus"></div>
+    </div>
+
+    <script>
+        // MQTT Connection Variables
+        var client;
+        var clientID = "";
+        var host = "test.mosquitto.org";
+        var port = 8081;
+        var topic = -1;
+        var isStartConnectDone = false;
+
+        // Get match code from URL parameters
+        function getMatchCodeFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('matchCode');
+        }
+
+        // Initialize connection
+        function initializeOverlay() {
+            const matchCode = getMatchCodeFromURL();
+            if (matchCode) {
+                startConnect(matchCode);
+            }
+        }
+
+        // MQTT Connection Functions (using your existing code structure)
+        function startConnect(_topic) {
+            clientID = "cricket_overlay_" + parseInt(Math.random() * 10000);
+            host = "test.mosquitto.org";
+            port = 8081;
+            topic = _topic;
+            
+            client = new Paho.MQTT.Client(host, Number(port), clientID);
+            client.onConnectionLost = onConnectionLost;
+            client.onMessageArrived = onMessageArrived;
+            
+            isStartConnectDone = false;
+            
+            client.connect({
+                onSuccess: onConnect,
+                onFailure: function(e) {
+                    console.error("Connection failed:", e);
+                    updateConnectionStatus(false);
+                },
+                useSSL: true,
+                timeout: 10
+            });
+        }
+
+        function onConnect() {
+            console.log("MQTT Connected successfully");
+            client.subscribe("matchCodeWatch" + topic);
+            isStartConnectDone = true;
+            updateConnectionStatus(true);
+            requestInitialState();
+        }
+
+        function onConnectionLost(responseObject) {
+            isStartConnectDone = false;
+            updateConnectionStatus(false);
+            setTimeout(function() {
+                if (!isStartConnectDone) {
+                    startConnect(topic);
+                }
+            }, 5000);
+        }
+
+        function onMessageArrived(message) {
+            try {
+                const payload = JSON.parse(message.payloadString);
+                
+                if (payload.update !== undefined) {
+                    updateElement(payload.update.eleId, payload.update.newHtml);
+                } 
+                else if (payload.init !== undefined && payload.init !== "true") {
+                    initializeElements(payload);
+                } 
+                else if (payload.isTargetMode !== undefined) {
+                    handleTargetMode(payload.isTargetMode);
+                }
+            } catch (e) {
+                console.error("Error parsing message", e);
+            }
+        }
+
+        function requestInitialState() {
+            const message = new Paho.MQTT.Message(JSON.stringify({ 
+                init: "true",
+                viewer_joined: true,
+                client_id: clientID
+            }));
+            message.destinationName = "matchCodeWatch" + topic + "origin";
+            client.send(message);
+        }
+
+        // UI Update Functions
+        function updateElement(eleId, newHtml) {
+            const element = document.querySelector(eleId);
+            if (element) {
+                element.innerHTML = newHtml;
+                
+                if (eleId.includes('ball_no_')) {
+                    updateBallStyling(eleId, newHtml);
+                }
+            }
+        }
+
+        function initializeElements(payload) {
+            for (let key in payload.init) {
+                updateElement(key, payload.init[key]);
+            }
+            handleTargetMode(payload.isTargetMode);
+            calculatePartnership();
+        }
+
+        function updateBallStyling(eleId, content) {
+            const ball = document.querySelector(eleId);
+            if (!ball) return;
+            
+            ball.className = 'ball';
+            
+            if (content === '' || content === undefined) {
+                ball.classList.add('empty');
+                ball.innerHTML = '';
+            } else if (content === 'W') {
+                ball.classList.add('wicket');
+                ball.innerHTML = 'W';
+            } else if (content === '4') {
+                ball.classList.add('four');
+                ball.innerHTML = '4';
+            } else if (content === '6') {
+                ball.classList.add('six');
+                ball.innerHTML = '6';
+            } else if (content === '+') {
+                ball.classList.add('wide');
+                ball.innerHTML = 'W';
+            } else if (content === 'NB') {
+                ball.classList.add('wide');
+                ball.innerHTML = 'N';
+            } else if (content === 'D' || content === '•') {
+                ball.classList.add('dot');
+                ball.innerHTML = '•';
+            } else {
+                ball.classList.add('run');
+                ball.innerHTML = content;
+            }
+        }
+
+        function handleTargetMode(isTargetMode) {
+            const targetSection = document.getElementById('targetSection');
+            if (isTargetMode) {
+                targetSection.style.display = 'block';
+            } else {
+                targetSection.style.display = 'none';
+            }
+        }
+
+        function calculatePartnership() {
+            const strikerRuns = parseInt(document.getElementById('striker-runs')?.textContent || 0);
+            const nonStrikerRuns = parseInt(document.getElementById('nonstriker-runs')?.textContent || 0);
+            const strikerBalls = parseInt(document.getElementById('striker-balls')?.textContent || 0);
+            const nonStrikerBalls = parseInt(document.getElementById('nonstriker-balls')?.textContent || 0);
+            
+            const partnershipRuns = strikerRuns + nonStrikerRuns;
+            const partnershipBalls = strikerBalls + nonStrikerBalls;
+            
+            const partnershipElement = document.getElementById('partnership');
+            if (partnershipElement) {
+                partnershipElement.textContent = `${partnershipRuns} (${partnershipBalls})`;
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const status = document.getElementById('connectionStatus');
+            if (connected) {
+                status.classList.add('connected');
+            } else {
+                status.classList.remove('connected');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeOverlay();
+        });
+
+        // Monitor for batsmen changes to update partnership
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.target.id && 
+                    (mutation.target.id.includes('striker') || mutation.target.id.includes('nonstriker'))) {
+                    calculatePartnership();
+                }
+            });
+        });
+
+        observer.observe(document.body, { 
+            childList: true, 
+            subtree: true, 
+            characterData: true 
+        });
+    </script>
+</body>
+</html>
