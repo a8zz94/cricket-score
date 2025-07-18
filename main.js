@@ -174,12 +174,16 @@ function update_score() {
 
 function recordDelivery(run, strikerIdx) {
   if (isNoBall) {
-    run++;
+	 if (run === "D") {
+      run = 1;
+    } else if (typeof run === "number") {
+      run++;
+    }
   }
   allDeliveries.push({
     run: run,
     striker: strikerIdx,
-	isNoBall: isNoBall
+    isNoBall: isNoBall,
   });
 }
 
