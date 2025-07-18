@@ -81,6 +81,10 @@ async function play_ball(run, score = 1) {
 		updateScorecard();
 		return;
 	}
+	if (run == "NB") {
+		noBall(true);
+		return;
+	}
 	recordDelivery(run, striker);
 	if (run !== "+" && run !== "NB") {
 		// For normal deliveries (not extras)
@@ -101,23 +105,15 @@ async function play_ball(run, score = 1) {
 		update_score();
 		return;
 	}
-	if (run == "NB") {
-		// isNoBall = true;
-		noBall(true);
-		//No ball
-		runs++;
-		scoreboard[over_no][1] += 1;
-		update_score();
-		return;
-	}
 	if (score == 1) {
 		runs += run;
 	}
 	// console.log("over_no=", over_no, "| ball_no=", ball_no," |Runs=",runs);
 
 	if (isNoBall) {
-		scoreboard[over_no][1] += run == "D" ? 0 : run;
-		// isNoBall = false;
+		let totalRun = run == "D" ? 1 : run + 1;
+		scoreboard[over_no][1] += totalRun
+		runs+= totalRun;
 		noBall(false);
 	} else {
 		//try with ball_no
@@ -177,9 +173,13 @@ function update_score() {
 }
 
 function recordDelivery(run, strikerIdx) {
+  if (isNoBall) {
+    run++;
+  }
   allDeliveries.push({
     run: run,
     striker: strikerIdx,
+	isNoBall: isNoBall
   });
 }
 
@@ -956,42 +956,52 @@ function updateHtml(eleId, newHtml) {
 //#region Score Modification
 
 function back_button() {
-	if(allDeliveries.length == 0 ) return;
-  
-	var last = allDeliveries.pop();
-  
-	if (last.run == "+") {
-		runs--;
-	  scoreboard[over_no][1] -= 1;
-	} else {
-	  ball_no--;
-	  if (ball_no == 0) {
-		ball_no = 6;
-		over_no--;
-	  }
-	  if (last.run == "W") {
-		players[last.striker].bowlsFaced.pop();
-		striker = last.striker;
-		nextBatsman--;
-	  } else if (last == "D") {
-		players[striker].bowlsFaced.pop();
-	  } else if (last.run == 1 || last.run == 3 || last.run == 5) {
-		players[nonStriker].bowlsFaced.pop();
-		swapBatsmen();
-	  } else {
-		players[striker].bowlsFaced.pop();
-	  }
-	  scoreboard[over_no][0].splice(ball_no, 1);
-	}
-	update_score();
-	update_runboard();
-	updateBatsmenDisplay();
-	updateBowlerDisplay();
-	updateHtml(
-	  "#over-ball",
-	  (over_no - 1).toString() + "." + (ball_no - 1).toString()
-	);
+  if (allDeliveries.length == 0) return;
+
+  var last = allDeliveries.pop();
+
+  if (last.isNoBall) {
+    runs -= last.run;
+    if (last.run - 1 == 1 || last.run - 1 == 3 || last.run - 1 == 5) {
+      players[nonStriker].bowlsFaced.pop();
+      swapBatsmen();
+    } else {
+      players[striker].bowlsFaced.pop();
+      scoreboard[over_no][1] -= last.run;
+    }
+      scoreboard[over_no][0].splice(ball_no, 1);
+  } else if (last.run == "+") {
+    runs--;
+    scoreboard[over_no][1] -= 1;
+  } else {
+    ball_no--;
+    if (ball_no == 0) {
+      ball_no = 6;
+      over_no--;
+    }
+    if (last.run == "W") {
+      players[last.striker].bowlsFaced.pop();
+      striker = last.striker;
+      nextBatsman--;
+    } else if (last == "D") {
+      players[striker].bowlsFaced.pop();
+    } else if (last.run == 1 || last.run == 3 || last.run == 5) {
+      players[nonStriker].bowlsFaced.pop();
+      swapBatsmen();
+    } else {
+      players[striker].bowlsFaced.pop();
+    }
+    scoreboard[over_no][0].splice(ball_no, 1);
   }
+  update_score();
+  update_runboard();
+  updateBatsmenDisplay();
+  updateBowlerDisplay();
+  updateHtml(
+    "#over-ball",
+    (over_no - 1).toString() + "." + (ball_no - 1).toString()
+  );
+}
   
   function change_score() {
 	  let over = parseInt($("#change_over").val());
