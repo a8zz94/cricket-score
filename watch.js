@@ -1,7 +1,7 @@
 var client;
 var clientID = "";
-var host = "test.mosquitto.org";
-var port = 8081;
+var host = ACTIVE_CONFIG.host;
+var port = ACTIVE_CONFIG.port;
 var topic = -1;
 
 $(document).ready(function() {
@@ -34,13 +34,8 @@ function getMatchCodeNConnect() {
 function startConnect(_topic) {
     // Generate a client ID for this viewer
     clientID = "cricket_viewer_" + parseInt(Math.random() * 10000);
-    
-    // Use the same MQTT broker as the sender
-    host = "test.mosquitto.org";
-    port = 8081;
-    
-    // Set the topic to the match code
-    topic = _topic;
+        // Set the topic to the match code
+     topic = _topic;
     
     // Log connection attempt
     if (document.getElementById("messages")) {

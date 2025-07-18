@@ -941,6 +941,8 @@ function updateHtml(eleId, newHtml) {
 	updateHtml("#nonstriker-name", players[nonStriker].name);
 	updateHtml("#nonstriker-runs", nonStrikerScore);
 	updateHtml("#nonstriker-balls", nonStrikerNumberOfBalls);
+
+  	calculatePartnership();
   }
 
   function updateBowlerDisplay() {
@@ -1033,6 +1035,9 @@ function back_button() {
 //#region Share Connection Stuff
 
 function shareModeStart() {
+	if(isShareMode){
+		return;
+	}
 	isShareMode = true;
 	startConnect();
 }
@@ -1320,4 +1325,140 @@ async function toggleStar(matchCode) {
   } catch (error) {
     console.error('Star toggle failed:', error);
   }
+}
+
+//Partnerships
+
+function calculatePartnerships() {
+  let partnerships = [];
+  let currentPartnership = null;
+  let activeBatsmen = new Set();
+  
+  // Track who's currently batting (not out)
+  for (let i = 0; i < allDeliveries.length; i++) {
+    const delivery = allDeliveries[i];
+    const strikerIndex = delivery.striker;
+    const run = delivery.run;
+    
+    // Add striker to active batsmen if not already there
+    activeBatsmen.add(strikerIndex);
+    
+    // If this is the first delivery or we don't have a current partnership, start one
+    if (!currentPartnership) {
+      currentPartnership = {
+        batsman1: Math.min(...activeBatsmen),
+        batsman2: Math.max(...activeBatsmen),
+        runs: 0,
+        balls: 0,
+        startDelivery: i,
+        endDelivery: null,
+        isActive: true
+      };
+    }
+    
+    // Add runs to current partnership (excluding wickets)
+    if (run !== "W" && run !== "RO") {
+      if (typeof run === 'number') {
+        currentPartnership.runs += run;
+      } else if (run === "+" || run === "NB") {
+        currentPartnership.runs += 1;
+      }
+      // Count balls faced (not extras)
+      if (run !== "+" && run !== "NB") {
+        currentPartnership.balls++;
+      }
+    }
+    
+    // If wicket or retirement, end current partnership
+    if (run === "W" || run === "RO") {
+      if (currentPartnership) {
+        currentPartnership.endDelivery = i;
+        currentPartnership.isActive = false;
+        partnerships.push(currentPartnership);
+        
+        // Remove the dismissed/retired batsman
+        activeBatsmen.delete(strikerIndex);
+        
+        // Start new partnership if there are still batsmen
+        if (activeBatsmen.size > 0) {
+          // Find the next batsman who will come in
+          let nextBatsmanIndex = nextBatsman;
+          activeBatsmen.add(nextBatsmanIndex);
+          
+          currentPartnership = {
+            batsman1: Math.min(...activeBatsmen),
+            batsman2: Math.max(...activeBatsmen),
+            runs: 0,
+            balls: 0,
+            startDelivery: i + 1,
+            endDelivery: null,
+            isActive: true
+          };
+        } else {
+          currentPartnership = null;
+        }
+      }
+    }
+  }
+  
+  // If we have an active partnership, add it to the list
+  if (currentPartnership && currentPartnership.isActive) {
+    partnerships.push(currentPartnership);
+  }
+  
+  return partnerships;
+}
+
+function getCurrentPartnership() {
+  const partnerships = calculatePartnerships();
+  const currentPartnership = partnerships.find(p => p.isActive);
+  
+  if (!currentPartnership) {
+    return {
+      batsman1Name: players[striker]?.name || "Player",
+      batsman2Name: players[nonStriker]?.name || "Player", 
+      runs: 0,
+      balls: 0
+    };
+  }
+  
+  return {
+    batsman1Name: players[currentPartnership.batsman1]?.name || "Player",
+    batsman2Name: players[currentPartnership.batsman2]?.name || "Player",
+    runs: currentPartnership.runs,
+    balls: currentPartnership.balls
+  };
+}
+
+function calculatePartnership() {
+  const partnership = getCurrentPartnership();
+  
+  // Update local display
+  const partnershipElement = document.getElementById("partnership");
+  if (partnershipElement) {
+    partnershipElement.textContent = `${partnership.runs} (${partnership.balls})`;
+  }
+  
+  // Send to overlay via MQTT if in share mode
+  if (isShareMode) {
+    updateHtml("#partnership", `${partnership.runs} (${partnership.balls})`);
+  }
+  
+  return partnership;
+}
+
+function update_score() {
+  let wickets = 0;
+
+  runs = sumScores(allDeliveries.map((d) => d.run));
+  wickets = allDeliveries.filter((d) => d.run == "W").length;
+  updateTarget();
+  updateHtml("#run", runs);
+  updateHtml("#wickets", wickets);
+  updateBatsmenDisplay();
+  updateBowlerDisplay();
+  updateScorecard();
+  
+  // Calculate partnership - ADD THIS LINE
+  calculatePartnership();
 }

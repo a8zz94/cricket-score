@@ -6,8 +6,8 @@ function startConnect(_topic) {
     clientID = "cricket_scorer_" + parseInt(Math.random() * 10000);
     
     // Use a consistent MQTT broker
-    host = "test.mosquitto.org";
-    port = 8081; // Use secure WebSocket port
+    host = ACTIVE_CONFIG.host;
+    port = ACTIVE_CONFIG.port;
     
     // Generate a topic if one isn't provided
     topic = _topic ?? "" + parseInt(Math.random() * 1000000);
