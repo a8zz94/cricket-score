@@ -33,9 +33,11 @@ var striker = 0; // Index of striker batsman
 var nonStriker = 1; // Index of non-striker batsman
 var nextBatsman = 2; // Index of next batsman to come in
 var bowlerScorecard = [];
+var isWicketMode = false;
+
 var allAvailablePlayers = ['Abdullah', 'Al Amin', 'Eousuf', 'Fahim', 'Farhan', 'Hafizur',
-	'Humayun', 'Imran', 'Iqbal', 'Jakaria', 'Lukman', 'Mahbub', 'Munna', 'Mubasshir', 'Rayhan',
-	'Raju', 'Ridwan', 'Shakib', 'Sodrul', 'Tahsin']; // List of all bowlers available in the match
+	'Humayun', 'Imran', 'Iqbal', 'Jakaria', 'Lukman', 'Mahbub', 'Mamun', 'Munna', 
+	'Mubashshir', 'Shazi', 'Rayhan', 'Raju', 'Ridwan', 'Shakib', 'Sodrul', 'Tahsin']; // List of all bowlers available in the match
 //#endregion
 
 //#region Application Start
@@ -45,13 +47,28 @@ $(document).ready(function () {
 		play_ball("D", 0);
 	});
 	$("#run_1").on("click", function (event) {
-		play_ball(1);
+		if (isWicketMode) {
+			play_ball("W", 0); // Bowled
+			exitWicketMode();
+		} else {
+			play_ball(1);
+		}
 	});
 	$("#run_2").on("click", function (event) {
-		play_ball(2);
+		if (isWicketMode) {
+			play_ball("W", 0); // Caught
+			exitWicketMode();
+		} else {
+			play_ball(2);
+		}
 	});
 	$("#run_3").on("click", function (event) {
-		play_ball(3);
+		if (isWicketMode) {
+			play_ball("W", 0); // LBW
+			exitWicketMode();
+		} else {
+			play_ball(3);
+		}
 	});
 	$("#run_wide").on("click", function (event) {
 		play_ball("+", 0);
@@ -60,13 +77,28 @@ $(document).ready(function () {
 		play_ball("NB", 0);
 	});
 	$("#run_4").on("click", function (event) {
-		play_ball(4);
+		if (isWicketMode) {
+			play_ball("W", 0); // Run Out
+			exitWicketMode();
+		} else {
+			play_ball(4);
+		}
 	});
+
 	$("#run_6").on("click", function (event) {
-		play_ball(6);
-	});
+		if (isWicketMode) {
+			play_ball("W", 0); // Stumped
+			exitWicketMode();
+		} else {
+			play_ball(6);
+		}
+});
 	$("#run_W").on("click", function (event) {
-		play_ball("W", 0);
+	if (!isWicketMode) {
+		enterWicketMode();
+	} else {
+		exitWicketMode();
+	}
 	});
 	$("#run_RO").on("click", function (event) {
 		play_ball("RO", 0);
@@ -1465,4 +1497,48 @@ function update_score() {
   
   // Calculate partnership - ADD THIS LINE
   calculatePartnership();
+}
+
+function enterWicketMode() {
+    isWicketMode = true;
+    
+    // Change button texts to wicket types
+    $("#run_1").text("Bowled");
+    $("#run_2").text("Caught");
+    $("#run_3").text("LBW");
+    $("#run_4").text("Run Out");
+    $("#run_6").text("Stumped");
+    
+    // Change wicket button to show it's active
+    $("#run_W").text("Cancel").css({
+        "background-color": "#dc3545",
+        "color": "white"
+    });
+    
+    // Disable other buttons that shouldn't be used in wicket mode
+    $("#run_dot").prop("disabled", true);
+    $("#run_wide").prop("disabled", true);
+    $("#run_no_ball").prop("disabled", true);
+}
+
+function exitWicketMode() {
+    isWicketMode = false;
+    
+    // Restore original button texts
+    $("#run_1").text("1");
+    $("#run_2").text("2");
+    $("#run_3").text("3");
+    $("#run_4").text("4");
+    $("#run_6").text("6");
+    
+    // Restore wicket button
+    $("#run_W").text("Wicket").css({
+        "background-color": "",
+        "color": ""
+    });
+    
+    // Re-enable other buttons
+    $("#run_dot").prop("disabled", false);
+    $("#run_wide").prop("disabled", false);
+    $("#run_no_ball").prop("disabled", false);
 }
