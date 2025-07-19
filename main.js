@@ -1720,6 +1720,9 @@ function exitWicketMode() {
   $("#run_dot").prop("disabled", false);
   $("#run_wide").prop("disabled", false);
   $("#run_no_ball").prop("disabled", false);
+  $("#run_4").prop("disabled", false);
+  $("#run_6").prop("disabled", false);
+
 }
 
 
