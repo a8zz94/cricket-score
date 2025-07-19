@@ -33,6 +33,7 @@ var bowlerScorecard = [];
 var isWicketMode = false;
 var isRunOutMode = false;
 var selectedRunOutRuns = 0;
+var isLegbyeMode = false; // New variable for leg bye mode
 
 var allAvailablePlayers = [
   "Abdullah",
@@ -66,6 +67,20 @@ $(document).ready(function () {
   $("#run_dot").on("click", function (event) {
     play_ball("D", 0);
   });
+    $("#run_wide").on("click", function (event) {
+    play_ball("+", 0);
+  });
+    $("#run_legbye").on("click", function (event) {
+      if (!isLegbyeMode) {
+        enterLegByeMode();
+      } else {
+        exitLegByeMode();
+      }
+      return;
+    });
+  $("#run_no_ball").on("click", function (event) {
+    play_ball("NB", 0);
+  });
   $("#run_1").on("click", function (event) {
     if (isRunOutMode) {
       selectedRunOutRuns = 0;
@@ -77,7 +92,6 @@ $(document).ready(function () {
       play_ball(1);
     }
   });
-
   $("#run_2").on("click", function (event) {
     if (isRunOutMode) {
       selectedRunOutRuns = 1;
@@ -89,7 +103,6 @@ $(document).ready(function () {
       play_ball(2);
     }
   });
-
   $("#run_3").on("click", function (event) {
     if (isRunOutMode) {
       selectedRunOutRuns = 2;
@@ -101,13 +114,6 @@ $(document).ready(function () {
       play_ball(3);
     }
   });
-  $("#run_wide").on("click", function (event) {
-    play_ball("+", 0);
-  });
-  $("#run_no_ball").on("click", function (event) {
-    play_ball("NB", 0);
-  });
-
   $("#run_4").on("click", function (event) {
     if (isRunOutMode) {
       // TODO: Add player selection step here
@@ -184,7 +190,11 @@ async function play_ball(run, score = 1) {
     isWicketMode = false;
   } else if (run !== "+" && run !== "NB") {
     // For normal deliveries (not extras)
-    players[striker].bowlsFaced.push(run);
+    if (isLegbyeMode) {
+      players[striker].bowlsFaced.push(0); // Record a dot ball for leg bye
+    } else {
+      players[striker].bowlsFaced.push(run);
+    }
     if (run !== "W") {
       if (typeof run === "number" && run % 2 === 1) {
         swapBatsmen();
@@ -212,10 +222,12 @@ async function play_ball(run, score = 1) {
     noBall(false);
   } else {
     //try with ball_no
+	if(isLegbyeMode){
+    scoreboard[over_no][0][ball_no] = run+"LB";
+	  exitLegByeMode();
+	}else {
     scoreboard[over_no][0][ball_no] = run;
-    //scoreboard[over_no][0].push(run);
-    // console.log(scoreboard[over_no]);
-    // console.log(scoreboard);
+	}
     update_runboard();
     ball_no++;
     if (ball_no >= 7) {
@@ -275,11 +287,17 @@ function recordDelivery(run, strikerIdx) {
       run++;
     }
   }
+  if(isLegbyeMode){
+	 allDeliveries.push({
+    run: run
+  });
+  }else{
   allDeliveries.push({
     run: run,
     striker: strikerIdx,
     isNoBall: isNoBall,
   });
+  }
 }
 
 function update_runboard() {
@@ -1725,7 +1743,6 @@ function exitWicketMode() {
 
 }
 
-
 function processRunOut(playerIndex) {
   const runOutCode = "W+" + selectedRunOutRuns + "+" + playerIndex;
 
@@ -1743,4 +1760,24 @@ function exitRunOutMode() {
   $("#run_6").prop("disabled", false);
 
   enterWicketMode();
+}
+
+function enterLegByeMode() {
+  isLegbyeMode = true;
+  $("#run_dot").prop("disabled", true);
+  $("#run_wide").prop("disabled", true);
+  $("#run_no_ball").prop("disabled", true);
+  $("#run_W").prop("disabled", true);
+  $("#run_RO").prop("disabled", true);
+  $("#run_legbye").text("X");
+}
+
+function exitLegByeMode() {
+  isLegbyeMode = false;
+  $("#run_dot").prop("disabled", false);
+  $("#run_wide").prop("disabled", false);
+  $("#run_no_ball").prop("disabled", false);
+  $("#run_W").prop("disabled", false);
+  $("#run_RO").prop("disabled", false);
+  $("#run_legbye").text("LB");
 }

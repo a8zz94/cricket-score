@@ -178,6 +178,16 @@ html, body, .container {
   gap: 8px;
 }
 
+.extras-group {
+  display: flex;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.extras-group .btn {
+  flex: 1; /* This makes each button take equal space */
+}
+
 .wicket-retire-group {
   display: flex;
   gap: 4px;
