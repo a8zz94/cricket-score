@@ -51,12 +51,10 @@ var allAvailablePlayers = [
   "Mamun",
   "Munna",
   "Mubashshir",
-  "Shazi",
-  "Rayhan",
+  "Shazil",
   "Raju",
   "Ridwan",
   "Shakib",
-  "Sodrul",
   "Tahsin",
 ]; // List of all bowlers available in the match
 //#endregion
@@ -433,37 +431,22 @@ function newBatsman(outNonStriker = false) {
 
   // Section 2: Select a new batsman from available players
   //Remove colors here. (keep two colors, left and right)
-  if (availableBatsmen.length > 0) {
-    modalHtml += `<div class="mb-2"><strong>Select a new batsman:</strong><div class="d-flex flex-wrap gap-2">`;
-    const colors = [
-      "#0d6efd", // blue
-      "#198754", // green
-      "#dc3545", // red
-      "#fd7e14", // orange
-      "#6f42c1", // purple
-      "#20c997", // teal
-      "#ffc107", // yellow
-      "#6610f2", // indigo
-      "#0dcaf0", // cyan
-      "#6c757d", // gray
-      "#f8f9fa", // light
-      "#343a40", // dark
-    ];
+ if (availableBatsmen.length > 0) {
+    modalHtml += `<div class="mb-2"><strong>Select a new batsman:</strong><div class="d-flex flex-wrap">`;
+    const colors = ["#0d6efd", "#198754"]; // blue and green only
+    
     availableBatsmen.forEach((name, idx) => {
-      const color = colors[idx % colors.length];
-      const textColor =
-        idx % colors.length === 6 || idx % colors.length === 10
-          ? "#212529"
-          : "#fff";
-      modalHtml += `<button type="button" class="list-group-item list-group-item-action flex-fill text-center p-2 m-0"
-					style="background-color:${color};color:${textColor};width:auto;min-width:unset;max-width:100%;white-space:nowrap;"
-					onclick="selectAvailableBatsman('${name.replace(
-            /'/g,
-            "\\'"
-          )}')">${name}</button>`;
+        const color = colors[idx % 2];
+        const alignmentClass = idx % 2 === 0 ? "me-auto" : "ms-auto";
+        
+        modalHtml += `<button type="button" class="list-group-item list-group-item-action p-2 m-1 ${alignmentClass}"
+            style="background-color:${color};color:#fff;width:48%;white-space:nowrap;"
+            onclick="selectAvailableBatsman('${name.replace(/'/g, "\\'")}')">
+            ${name}
+        </button>`;
     });
     modalHtml += `</div></div>`;
-  }
+}
 
   // Always show input for custom player name
   modalHtml += `
