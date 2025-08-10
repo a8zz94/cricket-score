@@ -25,4 +25,4 @@ const MQTT_CONFIG = {
 };
 
 // Easy switching - just change this line
-const ACTIVE_CONFIG = MQTT_CONFIG.configs.emqx;
+const ACTIVE_CONFIG = MQTT_CONFIG.configs.mosquitto;
